@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.DS_Store
+etc-app/node_modules/
+etc-app/dist/
+.gemini/
+
+# Ignore large assets in public root
+etc-app/public/*.glb
+etc-app/public/*.fbx
+etc-app/public/**/*.glb
+etc-app/public/**/*.fbx
+
+# Keep the model folder
+!etc-app/public/model/
+!etc-app/public/model/*.glb
+!etc-app/public/model/*.fbx
