@@ -14,7 +14,7 @@ import type { Scene } from 'three';
 /**
  * Coordinates useScene, useCharacterLoader, useSpeak, and useLocalSpeak.
  */
-export function useCharacter(modelUrl: string = '/model/LowRes2.glb') {
+export function useCharacter(modelUrl: string = '/model/Model1.glb') {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [scene, setScene] = useState<Scene | null>(null);
 

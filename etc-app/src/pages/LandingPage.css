@@ -4,7 +4,8 @@
   align-items: center;
   justify-content: center;
   min-height: calc(100vh - 4rem);
-  padding-bottom: 8rem; /* Lift the centered content group up */
+  padding-bottom: 8rem;
+  /* Lift the centered content group up */
   position: relative;
   overflow: hidden;
 }
@@ -43,7 +44,8 @@
   align-items: center;
   width: 100%;
   max-width: 1200px;
-  gap: 1.5rem; /* Reduced from 3rem to move items closer */
+  gap: 1.5rem;
+  /* Reduced from 3rem to move items closer */
 }
 
 .landing-header {

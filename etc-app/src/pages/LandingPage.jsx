@@ -19,7 +19,7 @@ export default function LandingPage({ navigate }) {
 
         {/* 3D Model Placeholder Container */}
         <div className="model-placeholder-container stagger-item">
-          
+
           {/* Here we use our reusable 3D component. 
               Currently passing 'placeholder' so it shows the default robot.
               Once your friend has the model, change it to e.g. modelPath="/character-welcome.glb" */}
@@ -28,7 +28,7 @@ export default function LandingPage({ navigate }) {
         </div>
 
         <div className="landing-footer stagger-item">
-          <button 
+          <button
             className="btn-glass-primary"
             onClick={() => navigate('Home')}
           >

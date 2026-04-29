@@ -6,7 +6,7 @@ import { CharacterContext } from './context/characterContext';
 import { useCharacter } from './hooks/useCharacter';
 import './styles/styles.css'; // Ensure styles are loaded
 
-export default function AvatarApp({ modelUrl = '/model/LowRes2.glb' }: { modelUrl?: string }) {
+export default function AvatarApp({ modelUrl = '/model/Model1.glb' }: { modelUrl?: string }) {
   const character = useCharacter(modelUrl);
 
   // Disable control: character.controlsRef.current.enabled = false;

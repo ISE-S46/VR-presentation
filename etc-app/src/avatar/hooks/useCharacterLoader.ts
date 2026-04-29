@@ -18,7 +18,7 @@ import type {
  */
 export function useCharacterLoader(
   scene: Scene | null,
-  modelUrl: string = '/model/LowRes2.glb'
+  modelUrl: string = '/model/Model1.glb'
 ): CharacterLoaderResult {
   const [ready, setReady] = useState(false);
   const [actions, setActions] = useState<ActionsMap>({});

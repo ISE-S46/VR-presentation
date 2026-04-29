@@ -48,7 +48,12 @@ body {
   font-size: clamp(14.5px, 1.5vw, 16px);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
   line-height: 1.2;
@@ -57,9 +62,18 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-heading);
 }
 
-h1 { font-size: clamp(1.75rem, 5vw, 2.5rem); line-height: 1.15; }
-h2 { font-size: clamp(1.2rem, 3vw, 1.6rem); }
-h3 { font-size: clamp(1.05rem, 2.5vw, 1.25rem); }
+h1 {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  line-height: 1.15;
+}
+
+h2 {
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+}
+
+h3 {
+  font-size: clamp(1.05rem, 2.5vw, 1.25rem);
+}
 
 p {
   line-height: 1.65;
@@ -203,18 +217,39 @@ a:hover {
    ANIMATIONS
    ============================ */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.15); }
-  50% { box-shadow: 0 0 12px 3px rgba(13, 148, 136, 0.08); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.15);
+  }
+
+  50% {
+    box-shadow: 0 0 12px 3px rgba(13, 148, 136, 0.08);
+  }
 }
 
 .animate-fade-in {
@@ -226,18 +261,42 @@ a:hover {
 }
 
 /* Stagger children animation */
-.stagger-children > * {
+.stagger-children>* {
   opacity: 0;
   animation: slideUp 0.45s ease-out forwards;
 }
-.stagger-children > *:nth-child(1) { animation-delay: 0.04s; }
-.stagger-children > *:nth-child(2) { animation-delay: 0.08s; }
-.stagger-children > *:nth-child(3) { animation-delay: 0.12s; }
-.stagger-children > *:nth-child(4) { animation-delay: 0.16s; }
-.stagger-children > *:nth-child(5) { animation-delay: 0.2s; }
-.stagger-children > *:nth-child(6) { animation-delay: 0.24s; }
-.stagger-children > *:nth-child(7) { animation-delay: 0.28s; }
-.stagger-children > *:nth-child(8) { animation-delay: 0.32s; }
+
+.stagger-children>*:nth-child(1) {
+  animation-delay: 0.04s;
+}
+
+.stagger-children>*:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.stagger-children>*:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+.stagger-children>*:nth-child(4) {
+  animation-delay: 0.16s;
+}
+
+.stagger-children>*:nth-child(5) {
+  animation-delay: 0.2s;
+}
+
+.stagger-children>*:nth-child(6) {
+  animation-delay: 0.24s;
+}
+
+.stagger-children>*:nth-child(7) {
+  animation-delay: 0.28s;
+}
+
+.stagger-children>*:nth-child(8) {
+  animation-delay: 0.32s;
+}
 
 /* ============================
    RESPONSIVE
@@ -271,19 +330,45 @@ a:hover {
    TYPEWRITER CURSOR
    ============================ */
 @keyframes blink-cursor {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }
 
 /* ============================
    MORPHING ORB
    ============================ */
 @keyframes morph-float {
-  0%   { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; transform: translate(0, 0) rotate(0deg); }
-  25%  { border-radius: 70% 30% 46% 54% / 30% 58% 42% 70%; transform: translate(10px, -15px) rotate(90deg); }
-  50%  { border-radius: 30% 70% 55% 45% / 55% 30% 70% 45%; transform: translate(-5px, 10px) rotate(180deg); }
-  75%  { border-radius: 55% 45% 30% 70% / 70% 55% 45% 30%; transform: translate(8px, 5px) rotate(270deg); }
-  100% { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; transform: translate(0, 0) rotate(360deg); }
+  0% {
+    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  25% {
+    border-radius: 70% 30% 46% 54% / 30% 58% 42% 70%;
+    transform: translate(10px, -15px) rotate(90deg);
+  }
+
+  50% {
+    border-radius: 30% 70% 55% 45% / 55% 30% 70% 45%;
+    transform: translate(-5px, 10px) rotate(180deg);
+  }
+
+  75% {
+    border-radius: 55% 45% 30% 70% / 70% 55% 45% 30%;
+    transform: translate(8px, 5px) rotate(270deg);
+  }
+
+  100% {
+    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+    transform: translate(0, 0) rotate(360deg);
+  }
 }
 
 /* ============================
@@ -293,13 +378,13 @@ a:hover {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   margin-top: clamp(1.5rem, 4vw, 2.5rem);
-  
+
   /* Single premium glass pill for all stats */
   background: var(--bg-card);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 100px;
-  box-shadow: 0 15px 35px -5px rgba(31, 122, 107, 0.1), inset 0 0 20px rgba(255,255,255,0.4);
+  box-shadow: 0 15px 35px -5px rgba(31, 122, 107, 0.1), inset 0 0 20px rgba(255, 255, 255, 0.4);
   padding: 0.5rem 1rem;
 }
 
@@ -308,7 +393,8 @@ a:hover {
   padding: clamp(0.5rem, 1vw, 1rem) 0;
   background: transparent;
   border: none;
-  border-right: 1px solid rgba(31, 122, 107, 0.15); /* Subtle vertical divider */
+  border-right: 1px solid rgba(31, 122, 107, 0.15);
+  /* Subtle vertical divider */
   border-radius: 0;
   box-shadow: none;
   transition: all var(--transition);
@@ -328,7 +414,8 @@ a:hover {
   font-weight: 800;
   color: var(--accent-teal);
   line-height: 1.1;
-  text-shadow: 0 2px 10px rgba(31, 122, 107, 0.3); /* Subtle glow */
+  text-shadow: 0 2px 10px rgba(31, 122, 107, 0.3);
+  /* Subtle glow */
   margin-bottom: 0.25rem;
 }
 
@@ -337,6 +424,7 @@ a:hover {
     border-radius: 24px;
     padding: 1rem;
   }
+
   .stat-card:nth-child(even) {
     border-right: none;
   }
@@ -366,7 +454,8 @@ a:hover {
 .bg-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(140px); /* Massive blur for aurora effect */
+  filter: blur(140px);
+  /* Massive blur for aurora effect */
   opacity: 0.6;
   animation: float-orb 30s infinite ease-in-out alternate;
 }
@@ -374,7 +463,8 @@ a:hover {
 .bg-orb-1 {
   width: 600px;
   height: 600px;
-  background: rgba(13, 148, 136, 0.12); /* Soft Teal */
+  background: rgba(13, 148, 136, 0.12);
+  /* Soft Teal */
   top: -200px;
   left: -200px;
   animation-duration: 35s;
@@ -383,7 +473,8 @@ a:hover {
 .bg-orb-2 {
   width: 700px;
   height: 700px;
-  background: rgba(124, 58, 237, 0.08); /* Soft Violet */
+  background: rgba(124, 58, 237, 0.08);
+  /* Soft Violet */
   bottom: -300px;
   right: -200px;
   animation-duration: 38s;
@@ -393,7 +484,8 @@ a:hover {
 .bg-orb-3 {
   width: 500px;
   height: 500px;
-  background: rgba(5, 150, 105, 0.1); /* Soft Green */
+  background: rgba(5, 150, 105, 0.1);
+  /* Soft Green */
   top: 30%;
   left: 50%;
   animation-duration: 32s;
@@ -401,19 +493,38 @@ a:hover {
 }
 
 @keyframes float-orb {
-  0% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-  100% { transform: translate(40px, 40px) scale(1.05); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+
+  100% {
+    transform: translate(40px, 40px) scale(1.05);
+  }
 }
 
 /* ============================
    PARTNER FLOAT CARD
    ============================ */
 @keyframes custom-float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 .partner-float-card {
@@ -424,33 +535,4 @@ a:hover {
   animation-play-state: paused;
   transform: translateY(-10px) scale(1.02);
   box-shadow: var(--shadow-hover), 0 0 0 1px rgba(13, 148, 136, 0.2);
-}
-
-/* ============================
-   LOGO STYLING
-   ============================ */
-.app-logo-container {
-  position: fixed;
-  top: 1.5rem;
-  left: 2rem;
-  z-index: 1000;
-  cursor: pointer;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.app-logo-container:hover {
-  transform: scale(1.05);
-}
-
-.app-logo-img {
-  height: clamp(45px, 6vw, 65px);
-  width: auto;
-  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.08));
-}
-
-@media (max-width: 600px) {
-  .app-logo-container {
-    top: 1rem;
-    left: 1rem;
-  }
 }
