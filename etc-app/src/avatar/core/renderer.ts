@@ -21,7 +21,7 @@ export function createCamera(): PerspectiveCamera {
   );
 
   // Zoomed back slightly to show more of the upper body and head comfortably
-  camera.position.set(0, 1.4, 2.0);
+  camera.position.set(0, 1.4, 2.5);
   return camera;
 }
 
