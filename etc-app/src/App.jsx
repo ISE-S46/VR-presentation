@@ -65,6 +65,9 @@ function App() {
         <div className="bg-orb bg-orb-3"></div>
       </div>
       <LiveClock />
+      <div className="app-logo-container" onClick={() => navigate('LandingPage')}>
+        <img src="/logo_etc.png" alt="ETC Logo" className="app-logo-img" />
+      </div>
       <div className={`page-transition ${isTransitioning ? 'page-exit' : 'page-enter'}`}>
         {renderPage()}
       </div>
