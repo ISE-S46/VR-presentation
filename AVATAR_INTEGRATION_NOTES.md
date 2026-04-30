@@ -1,35 +1,104 @@
 # Avatar System Integration Notes
 
-บันทึกการทำงานของการนำระบบ 3D Avatar (จากโฟลเดอร์ `threejs-test` ของเพื่อน) เข้ามารวมกับโปรเจกต์ `etc-app` 
+Documentation for integrating the 3D Avatar system (from the `threejs-test` folder) into the `etc-app` project.
 
-## 1. การย้ายโค้ดเข้าสู่โปรเจกต์ (Migration)
-- **สร้างโฟลเดอร์ `src/avatar/`**: ย้ายโค้ดทั้งหมดจาก `threejs-test/src/` เข้ามาไว้ในนี้ เพื่อแยกส่วนการทำงานของ Avatar ออกจาก UI หลักของเว็บ
-- **ย้ายไฟล์ Assets**: คัดลอกโฟลเดอร์ `threejs-test/public/` เข้ามาที่ `etc-app/public/` (รวมถึงไฟล์ 3D โมเดล เช่น `LowRes.glb` และโฟลเดอร์เสียงต่างๆ)
-- **ย้ายไฟล์ Library**: คัดลอกโฟลเดอร์ `library/` (ที่บรรจุระบบ LipSync) เข้ามาไว้ที่ `etc-app/src/library/` เพื่อป้องกัน error พาธหาไฟล์ไม่เจอ
+## 1. Code Migration
+- **Created `src/avatar/` folder**: Moved all code from `threejs-test/src/` into this folder to separate avatar functionality from the main web UI
+- **Asset migration**: Copied `threejs-test/public/` folder to `etc-app/public/` (including 3D model files like `LowRes.glb` and audio folders)
+- **Library migration**: Copied `library/` folder (containing the LipSync system) to `etc-app/src/library/` to prevent path resolution errors
 
-## 2. การปรับแก้ระบบของเพื่อน (Refactoring)
-- **ปรับแก้ `useCharacter.ts` และ `useCharacterLoader.ts`**: คืนค่าการรับพารามิเตอร์ `modelUrl` กลับมา (จากเดิมที่เพื่อน hardcode ล็อกชื่อไฟล์ไว้) เพื่อให้ระบบรองรับการแสดงผลโมเดลที่แตกต่างกันในแต่ละหน้าได้
-- **ปรับแก้ `App.tsx` (ในโฟลเดอร์ avatar)**: เปลี่ยนให้ Component รับ props `{ modelUrl }` แล้วส่งต่อไปให้ระบบโหลดโมเดล
-- **ปรับแต่ง `CharacterViewer.jsx`**: ลบโค้ดหุ่นยนต์จำลองออก แล้วครอบด้วย `<Suspense>` เพื่อเรียกใช้งาน `AvatarApp` (ระบบของเพื่อน) โดยตรง 
+## 2. System Refactoring
+- **Modified `useCharacter.ts` and `useCharacterLoader.ts`**: Restored `modelUrl` parameter acceptance (previously hardcoded by teammate) to support different models on different pages
+- **Updated `App.tsx` (in avatar folder)**: Changed component to accept `{ modelUrl }` props and pass them to the model loading system
+- **Enhanced `CharacterViewer.jsx`**: Removed placeholder robot code and wrapped with `<Suspense>` to directly use `AvatarApp` (teammate's system)
 
-## 3. การปรับแต่ง UI และการแสดงผล (Styling & Visuals)
-- **ลบพื้นหลังดำ (Transparent Background)**:
-  - แก้ไขไฟล์ `src/avatar/styles/styles.css` โดยลบ `background-color: #121212;` ที่ผูกกับ `body` ออก เพื่อไม่ให้ทับกับพื้นหลังของหน้าเว็บ
-  - แก้ไขไฟล์ `src/avatar/core/renderer.ts` โดยตั้งค่า `alpha: true` ให้กับ `WebGLRenderer` เพื่อให้พื้นที่ 3D มีความโปร่งใส (เหมือนไฟล์ PNG)
-- **จัดให้ขนาดพอดีกรอบ (Container Fitting)**:
-  - แก้ไข `styles.css` เปลี่ยน `position: fixed;` และ `100vw`/`100vh` เป็น `position: absolute;` และ `width: 100%; height: 100%;` เพื่อให้โมเดล 3D ไม่บังเต็มจอ แต่จะถูกกักบริเวณอยู่ใน `<div>` ที่กำหนด
-  - แก้ไขระบบ Resize ใน `renderer.ts` ให้คำนวณขนาดจาก `parentElement` แทนที่จะดึงค่ากว้าง/ยาวจาก `window`
-- **การจัดวางในหน้าเว็บ**:
-  - ถอด `CharacterViewer` ออกจากหน้า **Interactive Q&A** (`QnA.jsx`) ให้กลับไปใช้ `VRPlaceholder` ปกติ
-  - คง `CharacterViewer` ไว้ที่ **Landing Page** ให้อยู่ตรงกลางหน้า (ตามความต้องการล่าสุด)
-- **ปุ่มไมโครโฟน (Minimal UI)**:
-  - แก้ไข `src/avatar/components/localSpeeches.tsx` 
-  - ลบปุ่มรายการเสียง (1. Introduction, 2. ETC, ...) ออกทั้งหมด
-  - แทนที่ด้วยปุ่มรูป **ไมโครโฟนโปร่งแสง (Glassmorphism)** วางไว้ตรงกลางด้านล่างของตัวละคร 
-  - ผูกสคริปต์ให้เมื่อผู้ใช้กดปุ่ม ตัวละครจะพูดบท "1. Introduction" ทันที
+## 3. UI and Visual Adjustments
+- **Transparent Background**:
+  - Modified `src/avatar/styles/app.css` by removing `background-color: #121212;` from body to avoid overriding the webpage background
+  - Updated `src/avatar/core/renderer.ts` by setting `alpha: true` for `WebGLRenderer` to make the 3D area transparent (like PNG files)
+- **Container Fitting**:
+  - Modified `app.css` changed `position: fixed;` and `100vw`/`100vh` to `position: absolute;` and `width: 100%; height: 100%;` so the 3D model doesn't cover the full screen but stays within its designated `<div>`
+  - Updated resize system in `renderer.ts` to calculate size from `parentElement` instead of `window` dimensions
+- **Page Placement**:
+  - Removed `CharacterViewer` from **Interactive Q&A** page (`QnA.jsx`) to use regular `VRPlaceholder`
+  - Kept `CharacterViewer` on **Landing Page** centered on the page (per latest requirements)
+- **Microphone Button (Minimal UI)**:
+  - Modified `src/avatar/components/speakButton.tsx`
+  - Created a glassmorphism microphone button positioned at the bottom center of the character
+  - When clicked, the character speaks the provided script immediately
 
-## วิธีนำไปใช้งานต่อ
-เมื่อเพื่อนทำโมเดลตัวอื่นๆ เสร็จ สามารถนำไฟล์ `.glb` มาใส่ในโฟลเดอร์ `public/` แล้วแก้ชื่อไฟล์ในโค้ดได้เลย:
-\`\`\`jsx
-<CharacterViewer modelPath="/ชื่อไฟล์ของเพื่อน.glb" />
-\`\`\`
+## Current Avatar System Architecture
+
+The avatar system is now a complete TypeScript-based 3D character system:
+
+```
+src/avatar/
+├── App.tsx                    ← Main avatar component entry point
+├── main.tsx                   ← Avatar system entry point
+├── components/                ← React components for avatar UI
+│   ├── sceneCanvas.tsx        ← Three.js canvas wrapper
+│   ├── speakButton.tsx        ← Microphone/speak button
+│   ├── speechControls.tsx     ← Speech control interface
+│   └── localSpeeches.tsx      ← Preset speech options
+├── core/                      ← Three.js core systems
+│   ├── renderer.ts            ← Scene, camera, renderer setup
+│   └── controls.ts            ← Orbit controls
+├── hooks/                     ← React hooks for avatar logic
+│   ├── useCharacter.ts        ← Main character management
+│   ├── useCharacterLoader.ts  ← GLB model loading
+│   ├── useScene.ts            ← Three.js scene management
+│   ├── useSpeak.ts            ← TTS integration
+│   └── useLocalSpeak.ts       ← Audio file playback
+├── context/                   ← React context for state
+│   └── characterContext.ts    ← Character state management
+├── service/                   ← External services
+│   └── tts.ts                 ← Text-to-speech service
+├── types/                     ← TypeScript definitions
+│   ├── characters.type.ts     ← Character-related types
+│   └── lipsync.d.ts           ← Lip sync type definitions
+├── world/                     ← 3D environment
+│   └── light.ts               ← Lighting setup
+└── styles/                    ← Avatar-specific styles
+    └── app.css                ← Avatar component styles
+```
+
+## Key Features
+- **GLB Model Loading**: Supports any GLB 3D model file
+- **Lip Sync Animation**: Real-time mouth animation synchronized with speech
+- **Text-to-Speech**: Integrated TTS service for dynamic speech
+- **Audio Playback**: Support for pre-recorded audio files
+- **Orbit Controls**: Mouse/touch controls for camera movement (can be disabled)
+- **Responsive Design**: Adapts to container size changes
+- **Transparent Background**: Integrates seamlessly with web page backgrounds
+
+## Usage in Pages
+
+To use the avatar in any page, import and use `CharacterViewer`:
+
+```jsx
+import CharacterViewer from '../components/CharacterViewer';
+
+function MyPage() {
+  return (
+    <div>
+      <CharacterViewer
+        modelPath="/model/FModel1.glb"
+        audioUrl="/audio/ETC-landing.mp3"
+        script="Welcome message here..."
+        scale={1.2}
+        position={[0, -1, 0]}
+      />
+    </div>
+  );
+}
+```
+
+## Future Model Integration
+
+When teammate creates new models, simply place the `.glb` file in `public/model/` and update the `modelPath` prop:
+
+```jsx
+<CharacterViewer modelPath="/model/NewModel.glb" />
+```
+
+The system will automatically load and display the new 3D model with all existing features (lip sync, speech, controls, etc.).
