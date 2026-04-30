@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import './styles/App.css';
+import { useState } from 'react';
 import LiveClock from './components/LiveClock';
 import Home from './pages/Home';
 import Introduction from './pages/Introduction';
@@ -10,11 +9,23 @@ import DemoProject from './pages/DemoProject';
 import CollaborationOpportunities from './pages/CollaborationOpportunities';
 import QnA from './pages/QnA';
 import LandingPage from './pages/LandingPage';
+import './styles/App.css';
+
+const PAGE_COMPONENTS = {
+  LandingPage,
+  Home,
+  Introduction,
+  OurPartners,
+  OurProjects,
+  ProjectDetail,
+  DemoProject,
+  CollaborationOpportunities,
+  QnA,
+};
 
 function App() {
   const [currentPage, setCurrentPage] = useState('LandingPage');
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [displayedPage, setDisplayedPage] = useState('LandingPage');
 
   const navigate = (pageId) => {
     if (pageId === currentPage) return;
@@ -22,40 +33,14 @@ function App() {
 
     setTimeout(() => {
       setCurrentPage(pageId);
-      setDisplayedPage(pageId);
       window.scrollTo(0, 0);
-
-      // Small delay then fade back in
       requestAnimationFrame(() => {
         setIsTransitioning(false);
       });
     }, 250);
   };
 
-  const renderPage = () => {
-    switch (displayedPage) {
-      case 'LandingPage':
-        return <LandingPage navigate={navigate} />;
-      case 'Home':
-        return <Home navigate={navigate} />;
-      case 'Introduction':
-        return <Introduction navigate={navigate} />;
-      case 'OurPartners':
-        return <OurPartners navigate={navigate} />;
-      case 'OurProjects':
-        return <OurProjects navigate={navigate} />;
-      case 'ProjectDetail':
-        return <ProjectDetail navigate={navigate} />;
-      case 'DemoProject':
-        return <DemoProject navigate={navigate} />;
-      case 'CollaborationOpportunities':
-        return <CollaborationOpportunities navigate={navigate} />;
-      case 'QnA':
-        return <QnA navigate={navigate} />;
-      default:
-        return <LandingPage navigate={navigate} />;
-    }
-  };
+  const PageComponent = PAGE_COMPONENTS[currentPage] || LandingPage;
 
   return (
     <div className="app-root">
@@ -66,7 +51,7 @@ function App() {
       </div>
       <LiveClock />
       <div className={`page-transition ${isTransitioning ? 'page-exit' : 'page-enter'}`}>
-        {renderPage()}
+        <PageComponent navigate={navigate} />
       </div>
     </div>
   );

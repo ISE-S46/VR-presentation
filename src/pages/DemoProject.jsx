@@ -1,5 +1,6 @@
 import BackButton from '../components/BackButton';
 import VRPlaceholder from '../components/VRPlaceholder';
+import '../styles/pages/Projects.css';
 
 export default function DemoProject({ navigate }) {
   return (
@@ -14,40 +15,21 @@ export default function DemoProject({ navigate }) {
 
       <VRPlaceholder section="Demo Project" />
 
-      <div className="glass-card" style={{ marginTop: '1.5rem' }}>
-        <div style={{
-          height: '240px',
-          background: 'linear-gradient(135deg, #0f172a, #1e3a5f)',
-          borderRadius: 'var(--radius-md)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '1.5rem',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: `
-              linear-gradient(rgba(13,148,136,0.06) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(13,148,136,0.06) 1px, transparent 1px)
-            `,
-            backgroundSize: '32px 32px',
-            pointerEvents: 'none'
-          }} />
-          <span style={{ fontSize: '3.5rem', position: 'relative', filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}>🦽 🤖</span>
+      <div className="glass-card demo-section">
+        <div className="demo-banner">
+          <div className="demo-banner-bg" />
+          <span className="demo-banner-icon">🦽 🤖</span>
         </div>
 
-        <h2 style={{ color: 'var(--text-heading)', marginBottom: '0.5rem' }}>How it works</h2>
-        <p style={{ lineHeight: '1.75', fontSize: '0.92rem' }}>
+        <h2 className="demo-content-title">How it works</h2>
+        <p className="demo-content-desc">
           This demonstration highlights our integration of LiDAR sensors and Computer Vision (CV)
           algorithms onto a standard motorized wheelchair. The system automatically detects obstacles
           in real-time and gently corrects the user's path, preventing collisions while maintaining
           user autonomy.
         </p>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '1.2rem' }}>
+        <div className="demo-tag-container">
           {['LiDAR', 'Computer Vision', 'Real-time', 'Autonomous'].map(tag => (
             <span key={tag} className="pill-tag pill-tag--teal">{tag}</span>
           ))}

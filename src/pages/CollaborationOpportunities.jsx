@@ -1,27 +1,28 @@
 import BackButton from '../components/BackButton';
 import VRPlaceholder from '../components/VRPlaceholder';
 
+const OPPORTUNITIES = [
+  {
+    icon: '🏢',
+    title: 'Industry Partnerships',
+    color: '#0d9488',
+    desc: 'Co-develop specialized assistive technologies. We provide the research expertise and facilities, while you bring market insights and commercialization pathways.'
+  },
+  {
+    icon: '🎓',
+    title: 'Academic Research',
+    color: '#7c3aed',
+    desc: 'Join forces on grant applications and fundamental research in human-computer interaction, smart mobility, or rehabilitation engineering.'
+  },
+  {
+    icon: '🧑‍🎓',
+    title: 'Student Projects',
+    color: '#059669',
+    desc: 'Sponsor a final-year project or provide internship opportunities. Engage with our talented engineering students to solve real-world accessibility challenges.'
+  }
+];
+
 export default function CollaborationOpportunities({ navigate }) {
-  const opportunities = [
-    {
-      icon: '🏢',
-      title: 'Industry Partnerships',
-      color: '#0d9488',
-      desc: 'Co-develop specialized assistive technologies. We provide the research expertise and facilities, while you bring market insights and commercialization pathways.'
-    },
-    {
-      icon: '🎓',
-      title: 'Academic Research',
-      color: '#7c3aed',
-      desc: 'Join forces on grant applications and fundamental research in human-computer interaction, smart mobility, or rehabilitation engineering.'
-    },
-    {
-      icon: '🧑‍🎓',
-      title: 'Student Projects',
-      color: '#059669',
-      desc: 'Sponsor a final-year project or provide internship opportunities. Engage with our talented engineering students to solve real-world accessibility challenges.'
-    }
-  ];
 
   return (
     <div className="page-container animate-fade-in">
@@ -35,18 +36,16 @@ export default function CollaborationOpportunities({ navigate }) {
 
       <VRPlaceholder section="Collaboration Opportunities" />
 
-      <div className="content-grid stagger-children" style={{ marginTop: '1.5rem' }}>
-        {opportunities.map((opp, index) => (
-          <div key={index} className="glass-card" style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.6rem'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <span style={{ fontSize: '1.3rem' }}>{opp.icon}</span>
-              <h3 style={{ color: opp.color, margin: 0, fontSize: '1.05rem' }}>{opp.title}</h3>
+      <div className="content-grid stagger-children collaboration-grid">
+        {OPPORTUNITIES.map((opp, index) => (
+          <div key={index} className="glass-card collaboration-card">
+            <div className="collaboration-header">
+              <span className="collaboration-icon">{opp.icon}</span>
+              <h3 className="collaboration-title" style={{ color: opp.color }}>
+                {opp.title}
+              </h3>
             </div>
-            <p style={{ lineHeight: '1.65', fontSize: '0.9rem' }}>
+            <p className="collaboration-desc">
               {opp.desc}
             </p>
           </div>

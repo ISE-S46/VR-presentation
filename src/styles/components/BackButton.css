@@ -1,0 +1,22 @@
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: Inter, sans-serif;
+  margin-bottom: 1rem;
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.back-button:hover {
+  color: var(--accent-teal);
+  background: rgba(13, 148, 136, 0.05);
+  transform: translateX(-3px);
+}

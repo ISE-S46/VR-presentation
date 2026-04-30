@@ -140,7 +140,6 @@ Font:           DM Sans, 14px
 ## Getting Started
 
 ```bash
-cd etc-app
 npm install
 npm run dev
 ```

@@ -1,0 +1,51 @@
+.vr-placeholder-container {
+  width: 100%;
+  min-height: 260px;
+  background: linear-gradient(145deg, rgba(245, 245, 247, 0.8), rgba(229, 231, 235, 0.4));
+  border: 1.5px dashed rgba(148, 163, 184, 0.25);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.6rem;
+  position: relative;
+  overflow: hidden;
+  color: var(--text-secondary);
+}
+
+.vr-placeholder-orb {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.05), transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.vr-placeholder-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+  position: relative;
+}
+
+.vr-placeholder-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  position: relative;
+  margin: 0;
+}
+
+.vr-placeholder-badge {
+  font-size: 0.75rem;
+  opacity: 0.5;
+  position: relative;
+  background: rgba(148, 163, 184, 0.08);
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-pill);
+}

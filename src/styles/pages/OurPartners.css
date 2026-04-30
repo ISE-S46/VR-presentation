@@ -1,0 +1,123 @@
+.partner-section {
+  margin-top: 2rem;
+}
+
+.partner-section:last-of-type {
+  margin-top: 2.5rem;
+}
+
+.partner-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.partner-section-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.header-divider {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* Internal Partners */
+.internal-partner-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.internal-partner-card {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.partner-emoji-box {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.partner-content h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.98rem;
+  line-height: 1.3;
+}
+
+.partner-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.partner-tag {
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* External Partners */
+.external-partner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+.external-partner-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.partner-logo-container {
+  height: 80px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.partner-logo {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
+  transition: transform 0.3s ease;
+}
+
+.partner-fallback-logo {
+  color: var(--accent-teal);
+  font-weight: 800;
+  font-size: 2rem;
+}
+
+.partner-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .internal-partner-grid {
+    grid-template-columns: 1fr;
+  }
+}

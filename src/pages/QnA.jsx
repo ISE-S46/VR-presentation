@@ -1,7 +1,7 @@
 import BackButton from '../components/BackButton';
 import ETCChatbot from '../components/ETCChatbot';
 import VRPlaceholder from '../components/VRPlaceholder';
-import '../styles/QnA.css';
+import '../styles/pages/QnA.css';
 
 export default function QnA({ navigate }) {
   return (

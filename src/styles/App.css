@@ -341,6 +341,16 @@ a:hover {
   }
 }
 
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--accent-teal);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink-cursor 0.8s step-end infinite;
+}
+
 /* ============================
    MORPHING ORB
    ============================ */

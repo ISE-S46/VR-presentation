@@ -1,5 +1,26 @@
-import '../styles/LandingPage.css';
 import CharacterViewer from '../components/CharacterViewer';
+import '../styles/pages/LandingPage.css';
+
+function ArrowRightIcon({ className }) {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width="20" 
+      height="20" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+      aria-hidden="true"
+    >
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>
+  );
+}
 
 export default function LandingPage({ navigate }) {
   return (
@@ -23,7 +44,7 @@ export default function LandingPage({ navigate }) {
           {/* Here we use our reusable 3D component. 
               Currently passing 'placeholder' so it shows the default robot.
               Once your friend has the model, change it to e.g. modelPath="/character-welcome.glb" */}
-          <CharacterViewer modelPath="placeholder" scale={1.2} position={[0, -1, 0]} />
+          <CharacterViewer modelPath="/model/FModel1.glb" scale={1.2} position={[0, -1, 0]} />
 
         </div>
 
@@ -31,12 +52,10 @@ export default function LandingPage({ navigate }) {
           <button
             className="btn-glass-primary"
             onClick={() => navigate('Home')}
+            aria-label="Get to know ETC more"
           >
             <span className="btn-text">Let's get to know ETC more</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="btn-icon">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
+            <ArrowRightIcon className="btn-icon" />
           </button>
         </div>
       </div>

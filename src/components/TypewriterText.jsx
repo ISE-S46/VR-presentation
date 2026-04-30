@@ -24,15 +24,7 @@ export default function TypewriterText({ text, speed = 60, delay = 300 }) {
     <span>
       {displayed}
       {displayed.length < text.length && (
-        <span style={{
-          display: 'inline-block',
-          width: '2px',
-          height: '1em',
-          background: 'var(--accent-teal)',
-          marginLeft: '2px',
-          verticalAlign: 'text-bottom',
-          animation: 'blink-cursor 0.8s step-end infinite'
-        }} />
+        <span className="typewriter-cursor" />
       )}
     </span>
   );
