@@ -76,9 +76,6 @@ export function useLocalSpeak(speakRefsRef: React.RefObject<SpeakRefs>) {
     const durationMs = audio.duration * 1000;
 
     const onPlaying = () => {
-      // Switch to Talk animation when audio starts
-      speakRefsRef.current?.controller?.switchAction('Talk');
-
       // audio.currentTime may already be >0 if the browser pre-decoded some
       // frames before firing 'playing'. Back-calculating the true start time
       // keeps lipsync anchored to the actual audio output position.
@@ -100,6 +97,7 @@ export function useLocalSpeak(speakRefsRef: React.RefObject<SpeakRefs>) {
     audio.addEventListener('ended', onEnded, { once: true });
 
     try {
+      speakRefsRef.current?.controller?.switchAction('Talk');
       await audio.play();
       audioRef.current = audio;
     } catch (err) {

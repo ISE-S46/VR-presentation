@@ -14,7 +14,7 @@ import type { Scene } from 'three';
 /**
  * Coordinates useScene, useCharacterLoader, useSpeak, and useLocalSpeak.
  */
-export function useCharacter(modelUrl: string = '/model/Model1.glb') {
+export function useCharacter(modelPath: string) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [scene, setScene] = useState<Scene | null>(null);
 
@@ -34,7 +34,7 @@ export function useCharacter(modelUrl: string = '/model/Model1.glb') {
     morphTargets,
     controller,
     refs: characterRefsRef,
-  } = useCharacterLoader(scene, modelUrl);
+  } = useCharacterLoader(scene, modelPath);
 
   // speakRefsRef is a stable ref that useSpeak reads — avoids stale closures
   const speakRefsRef = useRef<SpeakRefs>({ audio: null, lipSync: null, controller: null });

@@ -96,9 +96,6 @@ export function useSpeak(speakRefsRef: React.RefObject<SpeakRefs>) {
     const durationMs = audio.duration * 1000;
 
     const onPlaying = () => {
-      // Switch to Talk animation when audio starts
-      speakRefsRef.current?.controller?.switchAction('Talk');
-
       // Back-calculate start time accounting for any pre-decoded frames
       // already consumed before the 'playing' event fired.
       const alreadyElapsedMs = audio.currentTime * 1000;
@@ -119,6 +116,7 @@ export function useSpeak(speakRefsRef: React.RefObject<SpeakRefs>) {
     audio.addEventListener('ended', onEnded, { once: true });
 
     try {
+      speakRefsRef.current?.controller?.switchAction('Talk');
       await audio.play();
       audioRef.current = audio;
     } catch (err) {

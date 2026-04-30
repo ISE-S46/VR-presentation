@@ -12,10 +12,17 @@ export function createScene(): Scene {
 }
 
 // create camera
-export function createCamera(): PerspectiveCamera {
+export function createCamera(canvas?: HTMLCanvasElement): PerspectiveCamera {
+  // Use container's aspect ratio if canvas is provided, otherwise use window
+  let aspect = window.innerWidth / window.innerHeight;
+  if (canvas?.parentElement) {
+    const parent = canvas.parentElement;
+    aspect = parent.clientWidth / parent.clientHeight;
+  }
+
   const camera = new PerspectiveCamera(
     45, // Lower FOV for less distortion
-    window.innerWidth / window.innerHeight,
+    aspect,
     0.1,
     10000
   );
@@ -39,7 +46,7 @@ export function createRenderer(canvas: HTMLCanvasElement): WebGLRenderer {
   } else {
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.toneMapping = ACESFilmicToneMapping;

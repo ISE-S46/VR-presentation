@@ -3,7 +3,7 @@ import AvatarApp from '../avatar/App';
 import VRPlaceholder from './VRPlaceholder';
 import '../styles/components/CharacterViewer.css';
 
-export default function CharacterViewer({ modelPath, section = "Interactive Avatar", ...threeProps }) {
+export default function CharacterViewer({ modelPath, audioURL, script, section = "Interactive Avatar", ...threeProps }) {
   // Check if we need to fall back to the wireframe placeholder
   const isPlaceholder = !modelPath || modelPath === 'placeholder';
 
@@ -28,7 +28,12 @@ export default function CharacterViewer({ modelPath, section = "Interactive Avat
         }
       >
         {/* spread ...threeProps to easily pass scale, position, etc. to the system */}
-        <AvatarApp modelUrl={modelPath} {...threeProps} />
+        <AvatarApp
+          modelUrl={modelPath}
+          audioUrl={audioURL}
+          script={script}
+          {...threeProps}
+        />
       </Suspense>
     </div>
   );

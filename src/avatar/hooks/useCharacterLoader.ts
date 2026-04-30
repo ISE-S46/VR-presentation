@@ -18,7 +18,7 @@ import type {
  */
 export function useCharacterLoader(
   scene: Scene | null,
-  modelUrl: string = '/model/Model1.glb'
+  modelPath: string
 ): CharacterLoaderResult {
   const [ready, setReady] = useState(false);
   const [actions, setActions] = useState<ActionsMap>({});
@@ -30,12 +30,12 @@ export function useCharacterLoader(
   const refsRef = useRef<CharacterRefs | null>(null);
 
   useEffect(() => {
-    if (!scene || !modelUrl) return;
+    if (!scene) return;
 
     let mounted = true;
 
     async function init() {
-      const character = await loadCharacter(modelUrl, scene!);
+      const character = await loadCharacter(modelPath, scene!);
       if (!mounted) return;
 
       if (!character.morphTargets) {

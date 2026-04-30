@@ -28,31 +28,51 @@ export function loadCharacter(
         });
 
         // Single traverse — find morph mesh AND fix materials in one pass
-        let faceMesh: Mesh | null = null;
-        let morphTargets: MorphTargets | null = null;
+        let bestMorphMesh: Mesh | null = null;
+        let bestMorphCount = 0;
+        let preferredFound = false;
 
         object.traverse((child) => {
           if (!(child instanceof Mesh)) return;
 
-          // Morph targets — capture the first mesh that has them
-          if (child.morphTargetInfluences && !faceMesh) {
-            faceMesh = child;
-            morphTargets = {
-              mesh: child,
-              influences: child.morphTargetInfluences,
-              dictionary: child.morphTargetDictionary ?? {},
-            };
+          fixMaterial(child);
 
-            console.log('✅ Found morph target mesh:', child.name);
-            console.log(
-              'Total morphs:',
-              Object.keys(morphTargets.dictionary).length
-            );
+          if (preferredFound || !child.morphTargetInfluences) return;
+
+          const childName = child.name.toLowerCase();
+
+          // Skip accessory meshes that share facial morph targets
+          if (
+            childName.includes('eye') ||
+            childName.includes('tear') ||
+            childName.includes('occlusion')
+          ) return;
+
+          const morphCount = Object.keys(child.morphTargetDictionary ?? {}).length;
+
+          if (childName.includes('body') || childName.includes('head')) {
+            bestMorphMesh = child;
+            preferredFound = true; // stops all further morph checks
+            return;
           }
 
-          // Materials
-          fixMaterial(child);
+          if (morphCount > bestMorphCount) {
+            bestMorphMesh = child;
+            bestMorphCount = morphCount;
+          }
         });
+
+        let morphTargets: MorphTargets | null = null;
+        if (bestMorphMesh) {
+          const mesh = bestMorphMesh as Mesh;
+          morphTargets = {
+            mesh,
+            influences: mesh.morphTargetInfluences!,
+            dictionary: mesh.morphTargetDictionary ?? {},
+          };
+          // console.log('✅ Found morph target mesh:', mesh.name);
+          // console.log('Total morphs:', Object.keys(morphTargets.dictionary).length);
+        }
 
         // Animation setup
         const mixer = new AnimationMixer(object);
@@ -62,12 +82,12 @@ export function loadCharacter(
         if (clips.length > 0) {
           console.log(`Total animations found: ${clips.length}`);
 
-          clips.forEach((clip, i) => {
+          clips.forEach((clip) => {
             const actionName = clip.name;
 
-            console.log(
-              `[${i}] Initializing Action: "${actionName}" — ${clip.duration.toFixed(3)}s`
-            );
+            // console.log(
+            //   `[${i}] Initializing Action: "${actionName}" — ${clip.duration.toFixed(3)}s`
+            // );
 
             const action = mixer.clipAction(clip);
             action.setEffectiveWeight(1);
@@ -75,7 +95,7 @@ export function loadCharacter(
             actions[actionName] = action;
           });
 
-          console.log('All actions ready:', Object.keys(actions));
+          // console.log('All actions ready:', Object.keys(actions));
         } else {
           console.warn('No animations found in the provided clips.');
         }

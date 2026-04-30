@@ -3,16 +3,16 @@ import '../styles/pages/LandingPage.css';
 
 function ArrowRightIcon({ className }) {
   return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="20" 
-      height="20" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className={className}
       aria-hidden="true"
     >
@@ -44,7 +44,13 @@ export default function LandingPage({ navigate }) {
           {/* Here we use our reusable 3D component. 
               Currently passing 'placeholder' so it shows the default robot.
               Once your friend has the model, change it to e.g. modelPath="/character-welcome.glb" */}
-          <CharacterViewer modelPath="/model/FModel1.glb" scale={1.2} position={[0, -1, 0]} />
+          <CharacterViewer
+            modelPath="/model/FModel1.glb"
+            audioUrl="/audio/ETC-landing.mp3"
+            script="Hi there, welcome to ETC, or Enabling Technology Collaboratory. This is where ideas, technology, and innovation come together. We explore AI, VR, and smart solutions to help improve people’s lives. Come on, let’s get to know ETC more."
+            scale={1.2} 
+            position={[0, -1, 0]}
+          />
 
         </div>
 

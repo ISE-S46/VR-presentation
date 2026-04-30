@@ -1,5 +1,6 @@
 ﻿import { useContext, useState } from 'react';
 import { CharacterContext } from '../context/characterContext';
+import '../styles/speechControls.css';
 
 export default function SpeechControls() {
   const [text, setText] = useState('');
@@ -11,27 +12,27 @@ export default function SpeechControls() {
   };
 
   return (
-    <div className="ui-container">
+    <div className="uiContainer">
       <textarea
-        id="textInput"
+        className="textInput"
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Type your line here..."
         rows={3}
       />
 
-      <div className="button-group">
-        <button id="playbtn" onClick={handleSpeak}>
+      <div className="buttonGroup">
+        <button className="playBtn" onClick={handleSpeak}>
           Speak
         </button>
       </div>
 
-      <p className="status-text status-hint">
+      <p className="statusText statusHint">
         Use mouse drag to orbit and scroll to zoom.
       </p>
 
       {!ctx && (
-        <p className="status-text status-error">
+        <p className="statusText statusError">
           Waiting for initialization...
         </p>
       )}

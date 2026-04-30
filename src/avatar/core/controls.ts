@@ -9,8 +9,7 @@ export function createControls(
   const controls = new OrbitControls(camera, renderer.domElement);
 
   controls.enableDamping = true;
-  // Point the camera right at the face
-  controls.target.set(0, 1.4, 0); 
+  controls.target.set(0, 1.4, 0);
   controls.update();
 
   return controls;

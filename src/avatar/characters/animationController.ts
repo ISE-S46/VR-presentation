@@ -13,11 +13,11 @@ export function createAnimationController({
     if (disposed) return;
 
     if (fromName && actions[fromName]) {
-      actions[fromName].fadeOut(0.35);
+      actions[fromName].fadeOut(0.25);
     }
 
     if (name && actions[name]) {
-      actions[name].reset().fadeIn(0.35).play();
+      actions[name].reset().fadeIn(0.25).play();
     }
 
     currentAction = name;
