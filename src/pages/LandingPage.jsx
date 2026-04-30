@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router';
 import CharacterViewer from '../components/CharacterViewer';
 import '../styles/pages/LandingPage.css';
 
@@ -22,10 +23,11 @@ function ArrowRightIcon({ className }) {
   );
 }
 
-export default function LandingPage({ navigate }) {
+export default function LandingPage() {
+  const navigate = useNavigate();
+
   return (
     <div className="landing-container animate-fade-in">
-      {/* Dynamic Background Elements for Landing Page */}
       <div className="landing-glow-top" />
       <div className="landing-glow-bottom" />
 
@@ -40,24 +42,19 @@ export default function LandingPage({ navigate }) {
 
         {/* 3D Model Placeholder Container */}
         <div className="model-placeholder-container stagger-item">
-
-          {/* Here we use our reusable 3D component. 
-              Currently passing 'placeholder' so it shows the default robot.
-              Once your friend has the model, change it to e.g. modelPath="/character-welcome.glb" */}
           <CharacterViewer
             modelPath="/model/FModel1.glb"
             audioUrl="/audio/ETC-landing.mp3"
             script="Hi there, welcome to ETC, or Enabling Technology Collaboratory. This is where ideas, technology, and innovation come together. We explore AI, VR, and smart solutions to help improve people’s lives. Come on, let’s get to know ETC more."
-            scale={1.2} 
+            scale={1.2}
             position={[0, -1, 0]}
           />
-
         </div>
 
         <div className="landing-footer stagger-item">
           <button
             className="btn-glass-primary"
-            onClick={() => navigate('Home')}
+            onClick={() => navigate('/Home')}
             aria-label="Get to know ETC more"
           >
             <span className="btn-text">Let's get to know ETC more</span>

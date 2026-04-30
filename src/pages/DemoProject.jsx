@@ -1,11 +1,14 @@
+import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
 import VRPlaceholder from '../components/VRPlaceholder';
 import '../styles/pages/Projects.css';
 
-export default function DemoProject({ navigate }) {
+export default function DemoProject() {
+  const navigate = useNavigate();
+
   return (
     <div className="page-container animate-fade-in">
-      <BackButton onClick={() => navigate('OurProjects')} label="Back to Projects" />
+      <BackButton onClick={() => navigate('/OurProjects')} label="Back to Projects" />
 
       <div className="page-header">
         <span className="section-label">Live Demo</span>
@@ -25,8 +28,7 @@ export default function DemoProject({ navigate }) {
         <p className="demo-content-desc">
           This demonstration highlights our integration of LiDAR sensors and Computer Vision (CV)
           algorithms onto a standard motorized wheelchair. The system automatically detects obstacles
-          in real-time and gently corrects the user's path, preventing collisions while maintaining
-          user autonomy.
+          in real-time and gently corrects the user's path, preventing collisions while maintaining user autonomy.
         </p>
 
         <div className="demo-tag-container">

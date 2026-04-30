@@ -1,12 +1,15 @@
+import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
 import ETCChatbot from '../components/ETCChatbot';
 import VRPlaceholder from '../components/VRPlaceholder';
 import '../styles/pages/QnA.css';
 
-export default function QnA({ navigate }) {
+export default function QnA() {
+  const navigate = useNavigate();
+
   return (
     <div className="page-container animate-fade-in">
-      <BackButton onClick={() => navigate('Home')} />
+      <BackButton onClick={() => navigate('/Home')} />
 
       <div className="page-header">
         <span className="section-label">Talk to Us</span>

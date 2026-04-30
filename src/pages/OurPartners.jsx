@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
 import VRPlaceholder from '../components/VRPlaceholder';
 import '../styles/pages/OurPartners.css';
@@ -8,12 +9,6 @@ const internalCentres = [
   { name: 'Environment Sustainability', emoji: '🌏', color: '#059669', gradient: 'linear-gradient(135deg, #059669, #10b981)', areas: ['Sustainable Materials', 'Energy Systems'] },
   { name: 'Healthcare & Nutrition', emoji: '🏥', color: '#0891b2', gradient: 'linear-gradient(135deg, #0891b2, #06b6d4)', areas: ['Applied Nutrition', 'Healthcare Engineering'] },
   { name: 'Intelligent Systems', emoji: '⚙️', color: '#ca8a04', gradient: 'linear-gradient(135deg, #ca8a04, #eab308)', areas: ['Advanced Manufacturing', 'Robotics & Automation'] },
-];
-
-// Note: This variable is defined but never used in the UI!
-const enablingTech = [
-  'Analytical Science', 'Artificial Intelligence', 'Behavioural Science',
-  'Cyber Security', 'Immersive Media', 'Internet of Things'
 ];
 
 const externalGroups = [
@@ -50,7 +45,6 @@ const externalGroups = [
   }
 ];
 
-// Extracted Component to safely handle Image Fallbacks using React State
 function ExternalPartnerCard({ partner, index }) {
   const [imgFailed, setImgFailed] = useState(false);
 
@@ -77,10 +71,12 @@ function ExternalPartnerCard({ partner, index }) {
   );
 }
 
-export default function OurPartners({ navigate }) {
+export default function OurPartners() {
+  const navigate = useNavigate();
+
   return (
     <div className="page-container animate-fade-in">
-      <BackButton onClick={() => navigate('Home')} />
+      <BackButton onClick={() => navigate('/Home')} />
 
       <div className="page-header">
         <span className="section-label">Ecosystem</span>
@@ -96,7 +92,6 @@ export default function OurPartners({ navigate }) {
           <h2>Internal Partners</h2>
           <div className="header-divider" />
         </div>
-
         <div className="internal-partner-grid">
           {internalCentres.map((c, i) => (
             <div key={i} className="glass-card internal-partner-card">
@@ -116,8 +111,10 @@ export default function OurPartners({ navigate }) {
                     <span
                       key={a}
                       className="partner-tag"
-                      style={{ background: `${c.color}0c`, color: c.color }}
-                    >
+                      style={{
+                        background: `${c.color}0c`,
+                        color: c.color
+                      }}>
                       {a}
                     </span>
                   ))}
@@ -128,7 +125,6 @@ export default function OurPartners({ navigate }) {
         </div>
       </section>
 
-      {/* ===== EXTERNAL PARTNERS ===== */}
       <section className="partner-section">
         <div className="partner-section-header">
           <h2>External Partners</h2>
@@ -137,7 +133,6 @@ export default function OurPartners({ navigate }) {
 
         <div className="external-partner-grid">
           {externalGroups.flatMap(g => g.partners).map((p, i) => (
-            // Using our new clean component!
             <ExternalPartnerCard key={p.name} partner={p} index={i} />
           ))}
         </div>

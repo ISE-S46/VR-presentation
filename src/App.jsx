@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router';
 import LiveClock from './components/LiveClock';
 import Home from './pages/Home';
 import Introduction from './pages/Introduction';
@@ -11,49 +11,37 @@ import QnA from './pages/QnA';
 import LandingPage from './pages/LandingPage';
 import './styles/App.css';
 
-const PAGE_COMPONENTS = {
-  LandingPage,
-  Home,
-  Introduction,
-  OurPartners,
-  OurProjects,
-  ProjectDetail,
-  DemoProject,
-  CollaborationOpportunities,
-  QnA,
-};
-
 function App() {
-  const [currentPage, setCurrentPage] = useState('LandingPage');
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
-  const navigate = (pageId) => {
-    if (pageId === currentPage) return;
-    setIsTransitioning(true);
-
-    setTimeout(() => {
-      setCurrentPage(pageId);
-      window.scrollTo(0, 0);
-      requestAnimationFrame(() => {
-        setIsTransitioning(false);
-      });
-    }, 250);
-  };
-
-  const PageComponent = PAGE_COMPONENTS[currentPage] || LandingPage;
-
   return (
-    <div className="app-root">
-      <div className="bg-animation">
-        <div className="bg-orb bg-orb-1"></div>
-        <div className="bg-orb bg-orb-2"></div>
-        <div className="bg-orb bg-orb-3"></div>
+    <BrowserRouter>
+      <div className="app-root">
+
+        {/* Background elements stay persistent across all pages */}
+        <div className="bg-animation">
+          <div className="bg-orb bg-orb-1"></div>
+          <div className="bg-orb bg-orb-2"></div>
+          <div className="bg-orb bg-orb-3"></div>
+        </div>
+
+        <LiveClock />
+
+        {/* The page-enter class ensures your fade-in animation still plays on route change */}
+        <div className="page-transition page-enter">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/Home" element={<Home />} />
+            <Route path="/Introduction" element={<Introduction />} />
+            <Route path="/OurPartners" element={<OurPartners />} />
+            <Route path="/OurProjects" element={<OurProjects />} />
+            <Route path="/OurProjects/ProjectDetail" element={<ProjectDetail />} />
+            <Route path="/OurProjects/DemoProject" element={<DemoProject />} />
+            <Route path="/OurProjects/CollaborationOpportunities" element={<CollaborationOpportunities />} />
+            <Route path="/QnA" element={<QnA />} />
+          </Routes>
+        </div>
+
       </div>
-      <LiveClock />
-      <div className={`page-transition ${isTransitioning ? 'page-exit' : 'page-enter'}`}>
-        <PageComponent navigate={navigate} />
-      </div>
-    </div>
+    </BrowserRouter>
   );
 }
 

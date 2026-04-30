@@ -1,4 +1,5 @@
 import { useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
 import CharacterViewer from '../components/CharacterViewer';
 import '../styles/pages/Introduction.css';
@@ -59,7 +60,8 @@ function Icon({ name, width = 22, height = 22 }) {
   );
 }
 
-export default function Introduction({ navigate }) {
+export default function Introduction() {
+  const navigate = useNavigate();
   const cardRefs = useRef([]);
 
   const handleMouseMove = useCallback((e) => {
@@ -75,7 +77,7 @@ export default function Introduction({ navigate }) {
 
   return (
     <div className="page-container animate-fade-in" onMouseMove={handleMouseMove}>
-      <BackButton onClick={() => navigate('Home')} />
+      <BackButton onClick={() => navigate('/Home')} />
 
       <div className="page-header">
         <span className="section-label">About Us</span>
@@ -84,7 +86,7 @@ export default function Introduction({ navigate }) {
       </div>
 
       <div style={{ height: '350px', width: '100%', borderRadius: 'var(--radius-lg)', overflow: 'hidden', marginBottom: '1.5rem' }}>
-        <CharacterViewer modelPath="placeholder" />
+        <CharacterViewer modelPath="placeholder" section="Introduction" />
       </div>
 
       <div className="intro-layout">

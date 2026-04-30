@@ -1,8 +1,9 @@
-import '../styles/pages/Home.css';
+import { useNavigate } from 'react-router';
 import TypewriterText from '../components/TypewriterText';
 import AnimatedCounter from '../components/AnimatedCounter';
 import etcBuildingImg from '../assets/etc-building.jpg';
 import BackButton from '../components/BackButton';
+import '../styles/pages/Home.css';
 
 const STATS = [
   { value: 12, suffix: '+', label: 'Active Projects' },
@@ -128,11 +129,13 @@ function ArrowIcon({ className }) {
   );
 }
 
-export default function Home({ navigate }) {
+export default function Home() {
+  const navigate = useNavigate();
+
   return (
     <div className="page-container animate-fade-in">
       {/* Back to Welcome Page */}
-      <BackButton onClick={() => navigate('LandingPage')} label="Back to Welcome Page" />
+      <BackButton onClick={() => navigate('/')} label="Back to Welcome Page" />
 
       {/* Hero Section */}
       <div className="home-hero">
@@ -175,8 +178,9 @@ export default function Home({ navigate }) {
           <button
             key={item.id}
             className={`bento-card glass-card${item.featured ? ' bento-featured' : ''}`}
-            onClick={() => navigate(item.id)}
+            onClick={() => navigate(`/${item.id}`)}
             style={{ '--glow-color': item.glowColor, '--accent-color': item.accentColor }}
+            aria-label={`Navigate to ${item.title}`}
           >
             {/* Ambient glow layer */}
             <div className="bento-glow" aria-hidden="true" />

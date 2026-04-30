@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
 import VRPlaceholder from '../components/VRPlaceholder';
 import '../styles/pages/Projects.css';
@@ -8,7 +9,6 @@ const categories = [
   { id: 'CollaborationOpportunities', number: '3.3', title: 'Collaboration', desc: 'Learn how to partner with ETC on new initiatives', icon: '🤝' }
 ];
 
-// Extracted SVG Component
 function ChevronRightIcon({ className }) {
   return (
     <svg
@@ -28,10 +28,12 @@ function ChevronRightIcon({ className }) {
   );
 }
 
-export default function OurProjects({ navigate }) {
+export default function OurProjects() {
+  const navigate = useNavigate();
+
   return (
     <div className="page-container animate-fade-in">
-      <BackButton onClick={() => navigate('Home')} />
+      <BackButton onClick={() => navigate('/Home')} />
 
       <div className="page-header">
         <span className="section-label">Portfolio</span>
@@ -46,7 +48,7 @@ export default function OurProjects({ navigate }) {
           <button
             key={cat.id}
             className="glass-card project-category-card"
-            onClick={() => navigate(cat.id)}
+            onClick={() => navigate(`/OurProjects/${cat.id}`)}
             aria-label={`Explore ${cat.title}`}
           >
             <div className="project-category-header">

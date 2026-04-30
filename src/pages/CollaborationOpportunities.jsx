@@ -1,5 +1,7 @@
+import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
 import VRPlaceholder from '../components/VRPlaceholder';
+import '../styles/pages/Projects.css';
 
 const OPPORTUNITIES = [
   {
@@ -22,11 +24,12 @@ const OPPORTUNITIES = [
   }
 ];
 
-export default function CollaborationOpportunities({ navigate }) {
+export default function CollaborationOpportunities() {
+  const navigate = useNavigate();
 
   return (
     <div className="page-container animate-fade-in">
-      <BackButton onClick={() => navigate('OurProjects')} label="Back to Projects" />
+      <BackButton onClick={() => navigate('/OurProjects')} label="Back to Projects" />
 
       <div className="page-header">
         <span className="section-label">Get Involved</span>
@@ -41,13 +44,9 @@ export default function CollaborationOpportunities({ navigate }) {
           <div key={index} className="glass-card collaboration-card">
             <div className="collaboration-header">
               <span className="collaboration-icon">{opp.icon}</span>
-              <h3 className="collaboration-title" style={{ color: opp.color }}>
-                {opp.title}
-              </h3>
+              <h3 className="collaboration-title" style={{ color: opp.color }}>{opp.title}</h3>
             </div>
-            <p className="collaboration-desc">
-              {opp.desc}
-            </p>
+            <p className="collaboration-desc">{opp.desc}</p>
           </div>
         ))}
       </div>

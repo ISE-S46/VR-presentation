@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
 import VRPlaceholder from '../components/VRPlaceholder';
 import '../styles/pages/Projects.css';
@@ -9,11 +10,12 @@ const projects = [
   { title: 'Cognitive Training Platform', desc: 'Gamified exercises for early dementia intervention', tag: 'Software', color: '#6366f1' }
 ];
 
-export default function ProjectDetail({ navigate }) {
+export default function ProjectDetail() {
+  const navigate = useNavigate();
 
   return (
     <div className="page-container animate-fade-in">
-      <BackButton onClick={() => navigate('OurProjects')} label="Back to Projects" />
+      <BackButton onClick={() => navigate('/OurProjects')} label="Back to Projects" />
 
       <div className="page-header">
         <span className="section-label">Research & Dev</span>
