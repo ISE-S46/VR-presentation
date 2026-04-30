@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import './App.css';
+import './styles/App.css';
 import LiveClock from './components/LiveClock';
 import Home from './pages/Home';
 import Introduction from './pages/Introduction';

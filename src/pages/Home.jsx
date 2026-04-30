@@ -1,4 +1,4 @@
-import './Home.css';
+import '../styles/Home.css';
 import TypewriterText from '../components/TypewriterText';
 import AnimatedCounter from '../components/AnimatedCounter';
 import etcBuildingImg from '../assets/etc-building.jpg';

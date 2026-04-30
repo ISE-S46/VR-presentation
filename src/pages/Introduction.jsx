@@ -1,6 +1,6 @@
 import BackButton from '../components/BackButton';
 import VRPlaceholder from '../components/VRPlaceholder';
-import './Introduction.css';
+import '../styles/Introduction.css';
 
 export default function Introduction({ navigate }) {
   const focusAreas = [

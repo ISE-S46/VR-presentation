@@ -1,4 +1,4 @@
-import './LandingPage.css';
+import '../styles/LandingPage.css';
 import CharacterViewer from '../components/CharacterViewer';
 
 export default function LandingPage({ navigate }) {
