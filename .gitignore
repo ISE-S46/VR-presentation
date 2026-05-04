@@ -1,17 +1,61 @@
-node_modules/
-dist/
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-etc-app/node_modules/
-etc-app/dist/
-.gemini/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+*.tmp
 
-# Ignore large assets in public root
-etc-app/public/*.glb
-etc-app/public/*.fbx
-etc-app/public/**/*.glb
-etc-app/public/**/*.fbx
+# Dependencies
+node_modules/
 
-# Keep the model folder
-!etc-app/public/model/
-!etc-app/public/model/*.glb
-!etc-app/public/model/*.fbx
+# Build artifacts
+dist/
+build/
+*.css.map
+*.local
+
+# Environment variables
+.env
+.env.local
+*.env.*
+
+# Compressed files
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst

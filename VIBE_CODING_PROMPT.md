@@ -2,7 +2,7 @@
 
 ## Project Context
 
-Build a **professional, dark-themed presentation web application** for the
+Build a **professional, light-themed presentation web application** for the
 **Enabling Technology Collaboratory (ETC)** — a Centre of Excellence under the
 School of Engineering at Temasek Polytechnic, Singapore.
 
@@ -16,22 +16,23 @@ Reference website: https://www.tp.edu.sg/research-and-industry/centres-of-excell
 
 ## Tech Stack
 
-- **Framework**: React 18 with Vite (NOT Create React App)
+- **Framework**: React 19 with Vite (NOT Create React App)
+- **Routing**: React Router v7 (BrowserRouter, Routes, Route)
 - **Styling**: Plain CSS with CSS custom properties (no Tailwind, no CSS-in-JS)
-- **Fonts**: Syne (headings) + DM Sans (body) via Google Fonts
-- **Routing**: Simple state-based navigation (no React Router needed)
+- **3D Graphics**: Three.js with @react-three/fiber and @react-three/drei
+- **Fonts**: Inter (system font stack with fallbacks)
 - **Build**: `npm run dev` starts the Vite dev server on port 5173
 
 ---
 
 ## Design Direction
 
-- **Theme**: Deep dark navy (`#070b14`) — professional, high-tech, not gimmicky
-- **Accent**: Electric blue (`#2d6ef7`) + cyan (`#00c2c7`)
-- **Typography**: Syne for all headings (bold, geometric), DM Sans for body (clean, legible)
-- **Cards**: Dark surface with subtle border, hover elevates with glow
-- **Feel**: Like a high-end product demo or a well-designed conference kiosk
-- **DO NOT**: Use purple gradients, Inter/Roboto fonts, generic "AI startup" aesthetics
+- **Theme**: Hi-tech light (`#f5f5f7`) — clean, professional, modern
+- **Accent**: Teal (`#1f7a6b`) + Violet (`#7c3aed`) + Emerald (`#059669`)
+- **Typography**: Inter font family (system font with excellent readability)
+- **Cards**: Glass-morphism with subtle transparency and blur effects
+- **Feel**: Like Apple's design language meets modern tech presentation
+- **DO NOT**: Use dark themes, harsh colors, or generic "corporate" aesthetics
 
 ---
 
@@ -39,22 +40,45 @@ Reference website: https://www.tp.edu.sg/research-and-industry/centres-of-excell
 
 ```
 src/
-├── App.jsx                    ← Root: state router between pages
+├── App.jsx                    ← Root: React Router setup with persistent elements
 ├── App.css                    ← Global CSS variables, shared component styles
 ├── main.jsx                   ← Entry point
+├── assets/                    ← Static assets (images, etc.)
+├── avatar/                    ← Complete 3D avatar system (TypeScript)
+│   ├── App.tsx                ← Main avatar component
+│   ├── main.tsx               ← Avatar entry point
+│   ├── components/            ← Avatar UI components
+│   ├── core/                  ← Three.js renderer, controls
+│   ├── hooks/                 ← React hooks for avatar logic
+│   ├── context/               ← React context for avatar state
+│   ├── service/               ← TTS service
+│   ├── types/                 ← TypeScript type definitions
+│   ├── world/                 ← Lighting setup
+│   └── styles/                ← Avatar-specific styles
+├── components/
+│   ├── AnimatedCounter.jsx    ← Animated number counter
+│   ├── BackButton.jsx         ← Reusable back navigation
+│   ├── CharacterViewer.jsx    ← 3D avatar wrapper component
+│   ├── ETCChatbot.jsx         ← AI chatbot component
+│   ├── LiveClock.jsx          ← Live clock display
+│   ├── TypewriterText.jsx     ← Typewriter effect text
+│   └── VRPlaceholder.jsx      ← Fallback placeholder for avatar
 ├── pages/
-│   ├── Home.jsx               ← Landing page with 4 main nav buttons
-│   ├── Home.css               ← Home page styles
-│   ├── Introduction.jsx       ← Section 01
-│   ├── OurPartners.jsx        ← Section 02
-│   ├── OurProjects.jsx        ← Section 03 hub (→ 3.1, 3.2, 3.3)
-│   ├── ProjectDetail.jsx      ← Section 3.1
-│   ├── DemoProject.jsx        ← Section 3.2
-│   ├── CollaborationOpportunities.jsx  ← Section 3.3
-│   └── QnA.jsx                ← Section 04 (AI chatbot placeholder)
-└── components/
-    ├── BackButton.jsx          ← Reusable back nav
-    └── VRPlaceholder.jsx       ← VR/3D avatar integration point
+│   ├── LandingPage.jsx        ← Root route with 3D avatar introduction
+│   ├── Home.jsx               ← Main navigation hub with bento grid
+│   ├── Introduction.jsx       ← Section 01: About ETC
+│   ├── OurPartners.jsx        ← Section 02: Partner showcase
+│   ├── OurProjects.jsx        ← Section 03: Projects hub
+│   ├── ProjectDetail.jsx      ← Section 3.1: Individual project details
+│   ├── DemoProject.jsx        ← Section 3.2: Demo project showcase
+│   ├── CollaborationOpportunities.jsx  ← Section 3.3: Collaboration info
+│   └── QnA.jsx                ← Section 04: AI chatbot interface
+├── styles/
+│   ├── App.css                ← Global styles and design tokens
+│   ├── components/            ← Component-specific styles
+│   └── pages/                 ← Page-specific styles
+└── library/
+    └── lipsyncEN.js           ← Lip sync library for avatar
 ```
 
 ---
@@ -62,77 +86,71 @@ src/
 ## Navigation Flow
 
 ```
-Home
-├── 01 Introduction          → Introduction page
-├── 02 Our Partners          → OurPartners page
-├── 03 Our Projects          → OurProjects hub
-│   ├── 3.1 Each Project     → ProjectDetail page
-│   ├── 3.2 Demo Project     → DemoProject page
-│   └── 3.3 Collaboration    → CollaborationOpportunities page
-└── 04 Q&A                   → QnA page (AI chatbot)
+Landing Page (/)
+├── Introduction          → /Introduction
+├── Our Partners          → /OurPartners
+├── Our Projects          → /OurProjects
+│   ├── Each Project      → /OurProjects/ProjectDetail
+│   ├── Demo Project      → /OurProjects/DemoProject
+│   └── Collaboration     → /OurProjects/CollaborationOpportunities
+└── Q&A                   → /QnA
 ```
 
-All navigation is done via `navigate(pageId)` — a function passed as prop.
-No URL routing. The `currentPage` state in `App.jsx` controls what renders.
+Navigation uses React Router with URL paths. The `useNavigate` hook handles routing.
 
 ---
 
 ## VR/3D Avatar Integration Points
 
-**Every content page** contains a `<VRPlaceholder section="..." />` component.
-This is where your teammate's VR/3D avatar gets plugged in.
+**Every content page** contains a `<CharacterViewer />` component that wraps the 3D avatar system.
 
-### How to replace:
+### Current Integration:
 ```jsx
-// In src/components/VRPlaceholder.jsx:
-// Delete the placeholder and replace with:
-import MyVRAvatar from "./MyVRAvatar";
-
-export default function VRPlaceholder({ section }) {
-  return <MyVRAvatar section={section} autoPlay />;
-}
+// In pages like LandingPage.jsx, Introduction.jsx, etc.:
+<CharacterViewer
+  modelPath="/model/FModel1.glb"
+  audioUrl="/audio/ETC-landing.mp3"
+  script="Welcome message..."
+  scale={1.2}
+  position={[0, -1, 0]}
+/>
 ```
 
-### VRPlaceholder appears in:
-| Page | section prop value |
-|------|--------------------|
-| Introduction | `"Introduction"` |
-| OurPartners | `"Our Partners"` |
-| OurProjects | `"Our Projects"` |
-| ProjectDetail | `"Each Project"` |
-| DemoProject | `"Demo Project"` |
-| CollaborationOpportunities | `"Collaboration Opportunities"` |
+### Avatar System Architecture:
+- **CharacterViewer.jsx**: React wrapper that handles loading states and fallbacks
+- **AvatarApp.tsx**: Main TypeScript avatar component with Three.js integration
+- **useCharacter.ts**: Hook managing avatar lifecycle, animations, and audio
+- **useScene.ts**: Hook managing Three.js scene, camera, renderer, and controls
+- **renderer.ts**: Camera and renderer setup with responsive aspect ratios
 
-The `section` prop tells the avatar what script/content to narrate.
+### Avatar Features:
+- GLB model loading with @react-three/drei
+- Lip sync animation system
+- Text-to-speech integration
+- Orbit controls (can be enabled/disabled)
+- Responsive camera setup
+- Audio playback with drift correction
 
 ---
 
 ## AI Q&A Chatbot Integration Point
 
-**In `src/pages/QnA.jsx`**, there is a clearly marked placeholder zone.
+**In `src/pages/QnA.jsx`**, the chatbot is fully implemented as `<ETCChatbot />`.
 
-### How to replace:
-```jsx
-// At the top of QnA.jsx, add:
-import ETCChatbot from "../components/ETCChatbot";
-
-// Replace the placeholder <div> with:
-<ETCChatbot />
-```
-
-### The chatbot component should:
-- Use the dark theme color vars (`--bg-card`, `--accent-blue`, `--text-secondary`)
-- Train/prompt the AI with ETC content (projects, partners, mission, etc.)
-- Support multi-turn conversation
-- File: `src/components/ETCChatbot.jsx`
+### Current Implementation:
+- Message history with user/AI roles
+- Typing indicators
+- Auto-scrolling message area
+- Form submission handling
+- Placeholder AI responses (ready for LLM integration)
 
 ### Design spec for chatbot UI:
 ```
-User messages:  right-aligned, background: var(--accent-blue), color: white
-AI messages:    left-aligned, background: var(--bg-card), color: var(--text-primary)
-Input:          full-width, dark border, border-radius: 8px
-Send button:    var(--accent-blue) background
-Font:           DM Sans, 14px
+User messages:  right-aligned, glass-morphism background
+AI messages:    left-aligned, subtle background
+Input:          full-width, rounded input field
+Send button:    accent color with hover effects
+Font:           Inter, responsive sizing
 ```
 
 ---
@@ -140,12 +158,11 @@ Font:           DM Sans, 14px
 ## Getting Started
 
 ```bash
-cd etc-app
 npm install
 npm run dev
 ```
 
-Open http://localhost:5173 — the app loads the Home page immediately.
+Open http://localhost:5173 — the app loads the LandingPage with 3D avatar immediately.
 
 ---
 
@@ -153,42 +170,42 @@ Open http://localhost:5173 — the app loads the Home page immediately.
 
 ### PROMPT A — If you need to add a new section/page:
 ```
-Add a new page to the ETC presentation app. The app uses React 18 + Vite
-with a state-based router (no React Router). All pages receive a `navigate(pageId)`
-prop. Create the page component in src/pages/[PageName].jsx matching the existing
-dark theme (--bg-dark, --bg-card, --accent-blue CSS vars). Add the new pageId to
-the switch statement in App.jsx and add a nav button to Home.jsx if needed.
-Follow the same pattern as the existing pages: BackButton at top, page-header
-section, then VRPlaceholder, then content.
+Add a new page to the ETC presentation app. The app uses React 19 + Vite
+with React Router v7. Create the page component in src/pages/[PageName].jsx
+matching the existing light hi-tech theme (--bg-dark, --bg-card, --accent-teal CSS vars).
+Add the new route to the Routes in App.jsx. Follow the same pattern as existing pages:
+BackButton at top, page-header section, then CharacterViewer with avatar, then content.
+Use useNavigate hook for navigation.
 ```
 
 ### PROMPT B — If you need to style a new component:
 ```
-Create a React component for the ETC presentation app (React 18 + Vite, no Tailwind).
-Match the existing dark theme: background #070b14, cards #0d1424, accent blue #2d6ef7,
-accent cyan #00c2c7, primary text #f0f4ff, secondary text #8a9cc4. Use Syne font for
-headings and DM Sans for body text. Borders are 1px solid rgba(255,255,255,0.07).
-Border radius is 14px for cards (--radius-md) and 20px for large containers (--radius-lg).
-Hover states should elevate with box-shadow: 0 16px 40px rgba(0,0,0,0.3).
+Create a React component for the ETC presentation app (React 19 + Vite, no Tailwind).
+Match the existing light hi-tech theme: background #f5f5f7, cards rgba(255,255,255,0.78),
+accent teal #1f7a6b, accent violet #7c3aed, primary text #1d1d1f, secondary text #6e6e73.
+Use Inter font family. Borders are rgba(0,0,0,0.06). Border radius uses --radius-* vars.
+Hover states should elevate with --shadow-hover. Use glass-morphism effects with
+backdrop-filter: blur() and rgba() backgrounds.
 ```
 
-### PROMPT C — To integrate the VR avatar:
+### PROMPT C — To integrate or modify the VR avatar:
 ```
 I have a VR/3D avatar component that needs to be integrated into the ETC presentation app.
-The app uses React 18 + Vite. Each content page has a <VRPlaceholder section="..." />
-component at src/components/VRPlaceholder.jsx. Replace the placeholder with my VR
-component. The `section` prop (string) tells the avatar what section is being shown.
-The avatar should autoPlay when the page loads. My VR component is at: [YOUR FILE PATH].
+The app uses React 19 + Vite with Three.js, @react-three/fiber, and @react-three/drei.
+Each content page has a <CharacterViewer /> component that wraps the avatar system.
+The avatar system is in src/avatar/ with TypeScript. Modify the CharacterViewer props
+or avatar system as needed. The avatar should auto-play when the page loads.
+Current avatar features: GLB loading, lip sync, TTS, orbit controls.
 ```
 
 ### PROMPT D — To integrate the AI chatbot:
 ```
-I have an AI chatbot component that needs to be placed in the ETC presentation app's
-Q&A page (src/pages/QnA.jsx). The app uses React 18 + Vite. Find the clearly marked
-placeholder in QnA.jsx (look for "AI CHATBOT ZONE" comment) and replace it with my
-chatbot component: import ETCChatbot from "../components/ETCChatbot". The chatbot should
-match the dark theme (background: var(--bg-card), text: var(--text-primary)). My chatbot
-component is already built and located at: src/components/ETCChatbot.jsx
+The AI chatbot is already implemented in the ETC presentation app's Q&A page
+(src/pages/QnA.jsx) as the <ETCChatbot /> component. It matches the light theme
+and has placeholder responses ready for LLM integration. To connect to a real AI:
+modify the handleSend function in ETCChatbot.jsx to call your AI API instead of
+the setTimeout placeholder. The component handles message state, typing indicators,
+and UI automatically.
 ```
 
 ---
@@ -218,17 +235,26 @@ NCSS, various industry and academic partners.
 ## CSS Variables Reference
 
 ```css
---bg-dark: #070b14;         /* Page background */
---bg-card: #0d1424;         /* Card background */
---bg-card-hover: #111d35;   /* Card hover bg */
---accent-blue: #2d6ef7;     /* Primary accent, CTAs */
---accent-cyan: #00c2c7;     /* Secondary accent, badges */
---text-primary: #f0f4ff;    /* Main text */
---text-secondary: #8a9cc4;  /* Muted text, labels */
---border: rgba(255,255,255,0.07);         /* Default border */
---border-hover: rgba(45,110,247,0.4);    /* Hover border */
---radius-sm: 8px;
---radius-md: 14px;
---radius-lg: 20px;
+--bg-dark: #f5f5f7;                    /* Page background */
+--bg-card: rgba(255, 255, 255, 0.78); /* Card background */
+--bg-card-hover: rgba(255, 255, 255, 0.95); /* Card hover */
+--accent-primary: #1d1d1f;             /* Primary text/accent */
+--accent-teal: #1f7a6b;                /* Primary brand color */
+--accent-violet: #7c3aed;              /* Secondary accent */
+--accent-gradient: linear-gradient(135deg, #1f7a6b, #059669); /* Gradients */
+--text-primary: #1d1d1f;               /* Main text */
+--text-secondary: #6e6e73;             /* Muted text */
+--text-heading: #1d1d1f;               /* Heading text */
+--border: rgba(0, 0, 0, 0.06);        /* Default border */
+--border-hover: rgba(13, 148, 136, 0.3); /* Hover border */
+--radius-pill: 999px;                 /* Fully rounded */
+--radius-xl: 24px;                    /* Extra large */
+--radius-lg: 20px;                    /* Large */
+--radius-md: 16px;                    /* Medium */
+--radius-sm: 12px;                    /* Small */
+--shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.03);
+--shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+--shadow-float: 0 20px 48px rgba(0, 0, 0, 0.06);
 --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+--transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 ```
