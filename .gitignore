@@ -31,6 +31,9 @@ build/
 *.css.map
 *.local
 
+# Exception for the local vendor library
+!vendor/**/dist/
+
 # Environment variables
 .env
 .env.local

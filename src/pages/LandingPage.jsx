@@ -43,11 +43,9 @@ export default function LandingPage() {
         {/* 3D Model Placeholder Container */}
         <div className="model-placeholder-container stagger-item">
           <CharacterViewer
-            modelPath="/model/FModel1.glb"
-            audioUrl="/audio/ETC-landing.mp3"
+            modelPath="/model/FModel2.glb"
+            audioURL="/audio/ETC-landing.mp3"
             script="Hi there, welcome to ETC, or Enabling Technology Collaboratory. This is where ideas, technology, and innovation come together. We explore AI, VR, and smart solutions to help improve people’s lives. Come on, let’s get to know ETC more."
-            scale={1.2}
-            position={[0, -1, 0]}
           />
         </div>
 

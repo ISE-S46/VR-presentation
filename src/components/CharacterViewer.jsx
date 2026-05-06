@@ -1,13 +1,66 @@
-import React, { Suspense } from 'react';
-import AvatarApp from '../avatar/App';
+import React, { useEffect, useRef } from 'react';
+import { createAvatarScene } from 'avatar-model';
 import VRPlaceholder from './VRPlaceholder';
 import '../styles/components/CharacterViewer.css';
 
-export default function CharacterViewer({ modelPath, audioURL, script, section = "Interactive Avatar", ...threeProps }) {
-  // Check if we need to fall back to the wireframe placeholder
+function AvatarCanvas({ modelPath, audioURL, script, ttsEndpoint, button, modelScale, modelPosition }) {
+  const canvasRef = useRef(null);
+  const destroyRef = useRef(null);
+  const controllerRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const { controller, destroy } = await createAvatarScene(canvas, {
+          modelUrl: modelPath,
+          audioUrl: audioURL,
+          script,
+          ttsEndpoint,
+          button,
+          modelScale,
+          modelPosition,
+        });
+
+        if (cancelled) {
+          destroy();
+          return;
+        }
+
+        controllerRef.current = controller;
+        destroyRef.current = destroy;
+      } catch (err) {
+        console.error('[CharacterViewer] Failed to init avatar:', err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      destroyRef.current?.();
+      destroyRef.current = null;
+      controllerRef.current = null;
+    };
+  }, [modelPath]);
+
+  return <canvas ref={canvasRef} className="avatar-canvas" />;
+}
+
+export default function CharacterViewer({
+  modelPath,
+  audioURL,
+  script,
+  ttsEndpoint = undefined, // Explicitly default to undefined to make it optional
+  section = 'Interactive Avatar',
+  button = true,
+  modelScale,
+  modelPosition,
+}) {
   const isPlaceholder = !modelPath || modelPath === 'placeholder';
 
-  // If no valid model is provided, display the UI wireframe
   if (isPlaceholder) {
     return (
       <div className="character-viewer-container">
@@ -16,25 +69,17 @@ export default function CharacterViewer({ modelPath, audioURL, script, section =
     );
   }
 
-  // If a valid model path IS provided, load the heavy 3D canvas
   return (
     <div className="character-viewer-container">
-      <Suspense
-        fallback={
-          <div className="character-viewer-loading">
-            <div className="loading-spinner" />
-            <span>Loading Interactive Avatar...</span>
-          </div>
-        }
-      >
-        {/* spread ...threeProps to easily pass scale, position, etc. to the system */}
-        <AvatarApp
-          modelUrl={modelPath}
-          audioUrl={audioURL}
-          script={script}
-          {...threeProps}
-        />
-      </Suspense>
+      <AvatarCanvas
+        modelPath={modelPath}
+        audioURL={audioURL}
+        script={script}
+        ttsEndpoint={ttsEndpoint}
+        button={button}
+        modelScale={modelScale}
+        modelPosition={modelPosition}
+      />
     </div>
   );
 }
