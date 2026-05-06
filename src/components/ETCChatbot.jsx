@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
+import { useGPT } from '../hooks/useGPT';
 import '../styles/components/ETCChatbot.css';
 
-export default function ETCChatbot() {
+export default function ETCChatbot({ onResponseReceived }) {
   const [messages, setMessages] = useState([
     { role: 'ai', content: "Hello! I'm the ETC assistant. Ask me anything about our projects, partners, or mission." }
   ]);
@@ -9,26 +10,30 @@ export default function ETCChatbot() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
+  const { fetchGPTResponse } = useGPT();
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const userMessage = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
+    const userText = input;
+
+    setMessages(prev => [...prev, { role: 'user', content: userText }]);
     setInput('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      setIsTyping(false);
-      setMessages(prev => [...prev, {
-        role: 'ai',
-        content: "I'm a placeholder for the AI backend. Connect me to an LLM to answer questions about ETC!"
-      }]);
-    }, 1200);
+    const aiReply = await fetchGPTResponse(userText);
+
+    if (onResponseReceived) {
+      onResponseReceived(aiReply);
+    }
+
+    setIsTyping(false);
+    setMessages(prev => [...prev, { role: 'ai', content: aiReply }]);
   };
 
   return (

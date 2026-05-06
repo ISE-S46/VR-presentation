@@ -46,6 +46,12 @@ function AvatarCanvas({ modelPath, audioURL, script, ttsEndpoint, button, modelS
     };
   }, [modelPath]);
 
+  useEffect(() => {
+    if (controllerRef.current && script) {
+      controllerRef.current.speak(script); 
+    }
+  }, [script]);
+
   return <canvas ref={canvasRef} className="avatar-canvas" />;
 }
 

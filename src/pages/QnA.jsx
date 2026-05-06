@@ -1,11 +1,13 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
 import ETCChatbot from '../components/ETCChatbot';
-import VRPlaceholder from '../components/VRPlaceholder';
+import CharacterViewer from '../components/CharacterViewer';
 import '../styles/pages/QnA.css';
 
 export default function QnA() {
   const navigate = useNavigate();
+  const [latestScript, setLatestScript] = useState("");
 
   return (
     <div className="page-container animate-fade-in">
@@ -23,7 +25,12 @@ export default function QnA() {
           <h2 className="zone-title">Virtual Assistant</h2>
           <p className="zone-subtitle">Talk to our 3D representative about ETC projects and opportunities.</p>
           <div className="vr-container">
-            <VRPlaceholder section="QnA_Main" style={{ height: '100%', flexGrow: 1 }} />
+            <CharacterViewer
+              modelPath="/model/FModel2.glb"
+              ttsEndpoint="api/tts"
+              script={latestScript || ""}
+              button={true}
+            />
           </div>
         </div>
 
@@ -32,7 +39,8 @@ export default function QnA() {
           <h2 className="zone-title">Text Chat</h2>
           <p className="zone-subtitle">Prefer typing? Ask us anything below.</p>
           <div style={{ height: '400px', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
-            <ETCChatbot />
+            {/* 4. Pass the setter function down to the chatbot */}
+            <ETCChatbot onResponseReceived={setLatestScript} />
           </div>
         </div>
       </div>
