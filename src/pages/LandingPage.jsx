@@ -44,8 +44,8 @@ export default function LandingPage() {
         <div className="model-placeholder-container stagger-item">
           <CharacterViewer
             modelPath="/model/FModel2.glb"
-            // audioURL="/audio/ETC-landing.mp3"
-            ttsEndpoint="/api/tts"
+            audioURL="/audio/ETC-landing.mp3"
+            // ttsEndpoint="/api/tts"
             script="Hi there, welcome to ETC, or Enabling Technology Collaboratory. This is where ideas, technology, and innovation come together. We explore AI, VR, and smart solutions to help improve people’s lives. Come on, let’s get to know ETC more."
           />
         </div>

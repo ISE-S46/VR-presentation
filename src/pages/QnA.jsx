@@ -9,6 +9,22 @@ export default function QnA() {
   const navigate = useNavigate();
   const [latestScript, setLatestScript] = useState("");
 
+  const [revealData, setRevealData] = useState(null);
+
+  // Custom TTS Handler to intercept the timing
+  const handleTTSFetch = async (text) => {
+    // Fetch the audio manually
+    const response = await fetch('/api/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, format: 'wav' }) 
+    });
+
+    setRevealData({ text, id: Date.now() });
+
+    return response; 
+  };
+
   return (
     <div className="page-container animate-fade-in">
       <BackButton onClick={() => navigate('/Home')} />
@@ -27,9 +43,9 @@ export default function QnA() {
           <div className="vr-container">
             <CharacterViewer
               modelPath="/model/FModel2.glb"
-              ttsEndpoint="api/tts"
+              ttsEndpoint={handleTTSFetch}
               script={latestScript || ""}
-              button={true}
+              button={false}
             />
           </div>
         </div>
@@ -39,8 +55,10 @@ export default function QnA() {
           <h2 className="zone-title">Text Chat</h2>
           <p className="zone-subtitle">Prefer typing? Ask us anything below.</p>
           <div style={{ height: '400px', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
-            {/* 4. Pass the setter function down to the chatbot */}
-            <ETCChatbot onResponseReceived={setLatestScript} />
+            <ETCChatbot 
+              onResponseReceived={setLatestScript} 
+              revealData={revealData} // Pass the reveal signal down
+            />
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useGPT } from '../hooks/useGPT';
 import '../styles/components/ETCChatbot.css';
 
-export default function ETCChatbot({ onResponseReceived }) {
+export default function ETCChatbot({ onResponseReceived, revealData }) {
   const [messages, setMessages] = useState([
     { role: 'ai', content: "Hello! I'm the ETC assistant. Ask me anything about our projects, partners, or mission." }
   ]);
@@ -15,6 +15,15 @@ export default function ETCChatbot({ onResponseReceived }) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Listen for the signal that the audio has downloaded and is ready to play
+  useEffect(() => {
+    if (revealData) {
+      // Audio is ready! Hide the typing dots and show the text
+      setIsTyping(false);
+      setMessages(prev => [...prev, { role: 'ai', content: revealData.text }]);
+    }
+  }, [revealData]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -31,9 +40,6 @@ export default function ETCChatbot({ onResponseReceived }) {
     if (onResponseReceived) {
       onResponseReceived(aiReply);
     }
-
-    setIsTyping(false);
-    setMessages(prev => [...prev, { role: 'ai', content: aiReply }]);
   };
 
   return (
