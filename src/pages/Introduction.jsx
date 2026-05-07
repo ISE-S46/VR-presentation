@@ -1,7 +1,6 @@
 import { useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
-import CharacterViewer from '../components/CharacterViewer';
 import '../styles/pages/Introduction.css';
 
 const FOCUS_AREAS = [
@@ -83,10 +82,6 @@ export default function Introduction() {
         <span className="section-label">About Us</span>
         <h1 className="page-title">Introduction</h1>
         <p className="page-subtitle">Welcome to the Enabling Technology Collaboratory</p>
-      </div>
-
-      <div style={{ height: '350px', width: '100%', borderRadius: 'var(--radius-lg)', overflow: 'hidden', marginBottom: '1.5rem' }}>
-        <CharacterViewer modelPath="placeholder" section="Introduction" />
       </div>
 
       <div className="intro-layout">

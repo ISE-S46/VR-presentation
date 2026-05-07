@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
-import VRPlaceholder from '../components/VRPlaceholder';
 import '../styles/pages/Projects.css';
 
 const categories = [
@@ -40,8 +39,6 @@ export default function OurProjects() {
         <h1 className="page-title">Our Projects</h1>
         <p className="page-subtitle">Innovating for inclusivity and empowerment</p>
       </div>
-
-      <VRPlaceholder section="Our Projects" />
 
       <div className="content-grid stagger-children projects-grid">
         {categories.map((cat) => (

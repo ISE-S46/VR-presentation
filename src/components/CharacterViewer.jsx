@@ -1,21 +1,8 @@
 import React, { Suspense } from 'react';
 import AvatarApp from '../avatar/App';
-import VRPlaceholder from './VRPlaceholder';
 import '../styles/components/CharacterViewer.css';
 
-export default function CharacterViewer({ modelPath, audioURL, script, section = "Interactive Avatar", ...threeProps }) {
-  // Check if we need to fall back to the wireframe placeholder
-  const isPlaceholder = !modelPath || modelPath === 'placeholder';
-
-  // If no valid model is provided, display the UI wireframe
-  if (isPlaceholder) {
-    return (
-      <div className="character-viewer-container">
-        <VRPlaceholder section={section} style={{ height: '100%', border: 'none' }} />
-      </div>
-    );
-  }
-
+export default function CharacterViewer({ modelPath, audioURL, script, section = "Interactive Avatar", children, ...threeProps }) {
   // If a valid model path IS provided, load the heavy 3D canvas
   return (
     <div className="character-viewer-container">
@@ -33,7 +20,9 @@ export default function CharacterViewer({ modelPath, audioURL, script, section =
           audioUrl={audioURL}
           script={script}
           {...threeProps}
-        />
+        >
+          {children}
+        </AvatarApp>
       </Suspense>
     </div>
   );

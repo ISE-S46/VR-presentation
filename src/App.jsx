@@ -7,7 +7,6 @@ import OurProjects from './pages/OurProjects';
 import ProjectDetail from './pages/ProjectDetail';
 import DemoProject from './pages/DemoProject';
 import CollaborationOpportunities from './pages/CollaborationOpportunities';
-import QnA from './pages/QnA';
 import LandingPage from './pages/LandingPage';
 import './styles/App.css';
 
@@ -36,7 +35,6 @@ function App() {
             <Route path="/OurProjects/ProjectDetail" element={<ProjectDetail />} />
             <Route path="/OurProjects/DemoProject" element={<DemoProject />} />
             <Route path="/OurProjects/CollaborationOpportunities" element={<CollaborationOpportunities />} />
-            <Route path="/QnA" element={<QnA />} />
           </Routes>
         </div>
 

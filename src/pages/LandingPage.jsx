@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router';
-import CharacterViewer from '../components/CharacterViewer';
 import '../styles/pages/LandingPage.css';
 
 function ArrowRightIcon({ className }) {
@@ -38,17 +37,6 @@ export default function LandingPage() {
             Enabling Technology<br />
             <span className="text-gradient">Collaboratory</span>
           </h1>
-        </div>
-
-        {/* 3D Model Placeholder Container */}
-        <div className="model-placeholder-container stagger-item">
-          <CharacterViewer
-            modelPath="/model/FModel1.glb"
-            audioUrl="/audio/ETC-landing.mp3"
-            script="Hi there, welcome to ETC, or Enabling Technology Collaboratory. This is where ideas, technology, and innovation come together. We explore AI, VR, and smart solutions to help improve people’s lives. Come on, let’s get to know ETC more."
-            scale={1.2}
-            position={[0, -1, 0]}
-          />
         </div>
 
         <div className="landing-footer stagger-item">

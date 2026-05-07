@@ -1,4 +1,4 @@
-﻿import SceneCanvas from './components/sceneCanvas';
+import SceneCanvas from './components/sceneCanvas';
 // import SpeechControls from './components/speechControls';
 // import LocalSpeeches from './components/localSpeeches';
 import SpeakButton from './components/speakButton';
@@ -10,11 +10,13 @@ import './styles/app.css'
 export default function AvatarApp({
   modelUrl = '/models/Model1.glb',
   audioUrl,
-  script
+  script,
+  children
 }: {
   modelUrl?: string;
-  audioUrl: string;
-  script: string;
+  audioUrl?: string;
+  script?: string;
+  children?: React.ReactNode;
 }) {
   const character = useCharacter(modelUrl);
 
@@ -32,10 +34,16 @@ export default function AvatarApp({
       {/* Preset speeches buttons component */}
       {/* <LocalSpeeches /> */}
 
-      <SpeakButton
-        audioUrl={audioUrl}
-        script={script}
-      />
+      {children !== undefined ? (
+        children
+      ) : (
+        audioUrl && script && (
+          <SpeakButton
+            audioUrl={audioUrl}
+            script={script}
+          />
+        )
+      )}
 
       {/* Uncommneted this and the import to use control panel component */}
       {/* {character.ready && character.controller && (

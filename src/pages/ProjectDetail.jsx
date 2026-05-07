@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
-import VRPlaceholder from '../components/VRPlaceholder';
 import '../styles/pages/Projects.css';
 
 const projects = [
@@ -20,10 +19,8 @@ export default function ProjectDetail() {
       <div className="page-header">
         <span className="section-label">Research & Dev</span>
         <h1 className="page-title">Project Portfolio</h1>
-        <p className="page-subtitle">A showcase of our research and development</p>
+        <p className="page-subtitle">Browse our extensive portfolio of assistive tech</p>
       </div>
-
-      <VRPlaceholder section="Each Project" />
 
       <div className="stagger-children project-list">
         {projects.map((proj, index) => (

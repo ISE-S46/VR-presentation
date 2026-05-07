@@ -3,6 +3,7 @@ import TypewriterText from '../components/TypewriterText';
 import AnimatedCounter from '../components/AnimatedCounter';
 import etcBuildingImg from '../assets/etc-building.jpg';
 import BackButton from '../components/BackButton';
+import HomeAssistant from '../components/HomeAssistant';
 import '../styles/pages/Home.css';
 
 const STATS = [
@@ -45,17 +46,6 @@ const BENTO_ITEMS = [
     featured: false,
     glowColor: 'rgba(168, 85, 247, 0.2)',
     accentColor: '#a855f7',
-  },
-  {
-    id: 'QnA',
-    number: '04',
-    title: 'Q&A Chatbot',
-    desc: 'Ask us anything',
-    tagline: 'Get instant answers',
-    iconType: 'message',
-    featured: false,
-    glowColor: 'rgba(249, 115, 22, 0.2)',
-    accentColor: '#f97316',
   },
 ];
 
@@ -206,6 +196,9 @@ export default function Home() {
           </button>
         ))}
       </div>
+
+      {/* Floating 3D Assistant */}
+      <HomeAssistant />
     </div>
   );
 }

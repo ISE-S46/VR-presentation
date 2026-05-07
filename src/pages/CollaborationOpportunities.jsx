@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
-import VRPlaceholder from '../components/VRPlaceholder';
 import '../styles/pages/Projects.css';
 
 const OPPORTUNITIES = [
@@ -34,10 +33,8 @@ export default function CollaborationOpportunities() {
       <div className="page-header">
         <span className="section-label">Get Involved</span>
         <h1 className="page-title">Collaboration Opportunities</h1>
-        <p className="page-subtitle">Partner with ETC to drive impactful innovation</p>
+        <p className="page-subtitle">Learn how to partner with ETC on new initiatives</p>
       </div>
-
-      <VRPlaceholder section="Collaboration Opportunities" />
 
       <div className="content-grid stagger-children collaboration-grid">
         {OPPORTUNITIES.map((opp, index) => (

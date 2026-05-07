@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
-import VRPlaceholder from '../components/VRPlaceholder';
 import '../styles/pages/Projects.css';
 
 export default function DemoProject() {
@@ -13,10 +12,8 @@ export default function DemoProject() {
       <div className="page-header">
         <span className="section-label">Live Demo</span>
         <h1 className="page-title">Featured Demo</h1>
-        <p className="page-subtitle">Smart Wheelchair Navigation System</p>
+        <p className="page-subtitle">Experience a featured smart mobility solution in action</p>
       </div>
-
-      <VRPlaceholder section="Demo Project" />
 
       <div className="glass-card demo-section">
         <div className="demo-banner">

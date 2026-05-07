@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
-import VRPlaceholder from '../components/VRPlaceholder';
 import '../styles/pages/OurPartners.css';
 
 const internalCentres = [
@@ -83,8 +82,6 @@ export default function OurPartners() {
         <h1 className="page-title">Our Partners</h1>
         <p className="page-subtitle">Collaborating across Temasek Polytechnic and beyond</p>
       </div>
-
-      <VRPlaceholder section="Our Partners" />
 
       {/* ===== INTERNAL PARTNERS ===== */}
       <section className="partner-section">
