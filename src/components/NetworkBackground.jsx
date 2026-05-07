@@ -13,9 +13,11 @@ export default function NetworkBackground() {
     });
   }, []);
 
-  if (!init) return null;
-
   const isMobile = window.innerWidth <= 768;
+
+  // Particles are extremely heavy on mobile devices and cause severe lag.
+  // Instead of struggling with low FPS, we disable them entirely on mobile.
+  if (!init || isMobile) return null;
 
   return (
     <Particles

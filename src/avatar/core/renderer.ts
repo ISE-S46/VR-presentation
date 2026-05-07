@@ -32,11 +32,12 @@ export function createCamera(canvas?: HTMLCanvasElement): PerspectiveCamera {
   return camera;
 }
 
-// create renderer from canvas
 export function createRenderer(canvas: HTMLCanvasElement): WebGLRenderer {
+  const isMobile = window.innerWidth <= 768;
+
   const renderer = new WebGLRenderer({
     canvas,
-    antialias: true,
+    antialias: !isMobile, // Disable on mobile to save GPU
     alpha: true,
   });
 
@@ -46,7 +47,9 @@ export function createRenderer(canvas: HTMLCanvasElement): WebGLRenderer {
   } else {
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  
+  // Cap pixel ratio heavily on mobile to prevent lag
+  renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5));
 
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.toneMapping = ACESFilmicToneMapping;
