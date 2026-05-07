@@ -149,7 +149,7 @@ export default function Home() {
       <BackButton onClick={() => handleNavClick('/')} label="Back to Welcome Page" />
 
       {/* Hero Section */}
-      <motion.div 
+      <motion.div
         className="home-hero"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -170,13 +170,13 @@ export default function Home() {
             <TypewriterText text="Enabling Technology Collaboratory" speed={50} delay={400} />
           </h1>
           <p className="hero-desc">
-            ETC is a multidisciplinary centre that integrates AI, IoT, and immersive technologies to develop innovative solutions and solve real industry problems.
+            ETC is our latest R&D centre, housing four key labs: AI, Immersive Media, IoT, and Innovation. It collaborates with industry partners and works across schools and departments at Temasek Polytechnic to drive research and innovation
           </p>
         </div>
       </motion.div>
 
       {/* Stats Row */}
-      <motion.div 
+      <motion.div
         className="stats-row stagger-children"
         variants={containerVariants}
         initial="hidden"
@@ -194,7 +194,7 @@ export default function Home() {
       </motion.div>
 
       {/* Bento Navigation Grid */}
-      <motion.div 
+      <motion.div
         className="bento-grid stagger-children"
         variants={containerVariants}
         initial="hidden"

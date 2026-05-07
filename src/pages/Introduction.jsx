@@ -102,7 +102,7 @@ export default function Introduction() {
     <div className="page-container" onMouseMove={handleMouseMove}>
       <BackButton onClick={() => handleNavClick('/Home')} />
 
-      <motion.div 
+      <motion.div
         className="page-header"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -113,7 +113,7 @@ export default function Introduction() {
         <p className="page-subtitle">Welcome to the Enabling Technology Collaboratory</p>
       </motion.div>
 
-      <motion.div 
+      <motion.div
         className="intro-layout"
         variants={containerVariants}
         initial="hidden"
@@ -128,9 +128,7 @@ export default function Introduction() {
             <h2 className="mission-title">Our Mission</h2>
           </div>
           <p className="mission-text">
-            Research, development, and application of assistive and enabling technologies
-            to improve quality of life for persons with disabilities and the elderly. We strive
-            to push the boundaries of innovation to create accessible, inclusive futures for everyone.
+            ETC is a multidisciplinary centre that integrates enabling technologies to drive innovation and create value for industry. It focuses on applied research in AI and Machine Learning, IoT, and immersive media, with dedicated collaboration spaces. The Innovation space serves as a test-bedding facility to develop and validate solutions for real-world industry challenges.
           </p>
         </motion.div>
 
