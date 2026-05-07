@@ -9,6 +9,7 @@ import DemoProject from './pages/DemoProject';
 import CollaborationOpportunities from './pages/CollaborationOpportunities';
 import LandingPage from './pages/LandingPage';
 import HomeAssistant from './components/HomeAssistant';
+import NetworkBackground from './components/NetworkBackground';
 import './styles/App.css';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
       <div className="app-root">
 
         {/* Background elements stay persistent across all pages */}
+        <NetworkBackground />
         <div className="bg-animation">
           <div className="bg-orb bg-orb-1"></div>
           <div className="bg-orb bg-orb-2"></div>

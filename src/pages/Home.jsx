@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router';
+import { motion } from 'framer-motion';
 import TypewriterText from '../components/TypewriterText';
 import AnimatedCounter from '../components/AnimatedCounter';
 import etcBuildingImg from '../assets/etc-building.jpg';
 import BackButton from '../components/BackButton';
+import { useSoundEffects } from '../hooks/useSoundEffects';
 
 import '../styles/pages/Home.css';
 
@@ -119,16 +121,40 @@ function ArrowIcon({ className }) {
   );
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.3 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+};
+
 export default function Home() {
   const navigate = useNavigate();
+  const { playHoverSound, playClickSound } = useSoundEffects();
+
+  const handleNavClick = (path) => {
+    playClickSound();
+    navigate(path);
+  };
 
   return (
     <div className="page-container animate-fade-in">
       {/* Back to Welcome Page */}
-      <BackButton onClick={() => navigate('/')} label="Back to Welcome Page" />
+      <BackButton onClick={() => handleNavClick('/')} label="Back to Welcome Page" />
 
       {/* Hero Section */}
-      <div className="home-hero">
+      <motion.div 
+        className="home-hero"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
+      >
         <div className="hero-orb" aria-hidden="true" />
         <div className="hero-image-container">
           <img
@@ -147,27 +173,43 @@ export default function Home() {
             ETC is a multidisciplinary centre that integrates AI, IoT, and immersive technologies to develop innovative solutions and solve real industry problems.
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Stats Row */}
-      <div className="stats-row stagger-children">
+      <motion.div 
+        className="stats-row stagger-children"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-50px" }}
+      >
         {STATS.map((stat, i) => (
-          <div key={i} className="stat-card">
+          <motion.div key={i} className="stat-card" variants={itemVariants}>
             <div className="stat-number">
               <AnimatedCounter end={stat.value} duration={1800} suffix={stat.suffix} prefix={stat.prefix || ''} />
             </div>
             <div className="stat-label">{stat.label}</div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* Bento Navigation Grid */}
-      <div className="bento-grid stagger-children">
+      <motion.div 
+        className="bento-grid stagger-children"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-50px" }}
+      >
         {BENTO_ITEMS.map((item) => (
-          <button
+          <motion.button
             key={item.id}
+            variants={itemVariants}
+            whileHover={{ scale: 1.02, y: -5 }}
+            whileTap={{ scale: 0.98 }}
             className={`bento-card glass-card${item.featured ? ' bento-featured' : ''}`}
-            onClick={() => navigate(`/${item.id}`)}
+            onClick={() => handleNavClick(`/${item.id}`)}
+            onMouseEnter={playHoverSound}
             style={{ '--glow-color': item.glowColor, '--accent-color': item.accentColor }}
             aria-label={`Navigate to ${item.title}`}
           >
@@ -192,9 +234,9 @@ export default function Home() {
             {/* Arrow */}
             <ArrowIcon className="bento-arrow" />
 
-          </button>
+          </motion.button>
         ))}
-      </div>
+      </motion.div>
 
       {/* Floating 3D Assistant */}
 

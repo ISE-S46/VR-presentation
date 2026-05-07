@@ -1,6 +1,8 @@
 import { useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router';
+import { motion } from 'framer-motion';
 import BackButton from '../components/BackButton';
+import { useSoundEffects } from '../hooks/useSoundEffects';
 import '../styles/pages/Introduction.css';
 
 const FOCUS_AREAS = [
@@ -59,9 +61,31 @@ function Icon({ name, width = 22, height = 22 }) {
   );
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+};
+
 export default function Introduction() {
   const navigate = useNavigate();
   const cardRefs = useRef([]);
+  const { playHoverSound, playClickSound } = useSoundEffects();
+
+  const handleNavClick = (path) => {
+    playClickSound();
+    navigate(path);
+  };
 
   const handleMouseMove = useCallback((e) => {
     cardRefs.current.forEach((card) => {
@@ -75,18 +99,28 @@ export default function Introduction() {
   }, []);
 
   return (
-    <div className="page-container animate-fade-in" onMouseMove={handleMouseMove}>
-      <BackButton onClick={() => navigate('/Home')} />
+    <div className="page-container" onMouseMove={handleMouseMove}>
+      <BackButton onClick={() => handleNavClick('/Home')} />
 
-      <div className="page-header">
+      <motion.div 
+        className="page-header"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         <span className="section-label">About Us</span>
         <h1 className="page-title">Introduction</h1>
         <p className="page-subtitle">Welcome to the Enabling Technology Collaboratory</p>
-      </div>
+      </motion.div>
 
-      <div className="intro-layout">
+      <motion.div 
+        className="intro-layout"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {/* Our Mission Section */}
-        <div className="mission-card">
+        <motion.div className="mission-card" variants={itemVariants}>
           <div className="mission-header">
             <div className="mission-icon">
               <Icon name="mission" width="24" height="24" />
@@ -98,10 +132,10 @@ export default function Introduction() {
             to improve quality of life for persons with disabilities and the elderly. We strive
             to push the boundaries of innovation to create accessible, inclusive futures for everyone.
           </p>
-        </div>
+        </motion.div>
 
         {/* Focus Areas Section */}
-        <div className="focus-section">
+        <motion.div className="focus-section" variants={itemVariants}>
           <div className="focus-header">
             <div className="focus-header-icon">
               <Icon name="focus" width="24" height="24" />
@@ -111,21 +145,23 @@ export default function Introduction() {
 
           <div className="focus-grid">
             {FOCUS_AREAS.map((area, index) => (
-              <div
+              <motion.div
                 key={area.name}
-                className="focus-card stagger-item"
-                style={{ animationDelay: `${index * 0.05}s` }}
+                className="focus-card"
+                variants={itemVariants}
+                whileHover={{ scale: 1.02 }}
+                onMouseEnter={playHoverSound}
                 ref={(el) => (cardRefs.current[index] = el)}
               >
                 <div className="focus-icon-wrapper">
                   <Icon name={area.icon} />
                 </div>
                 <span className="focus-card-text">{area.name}</span>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
