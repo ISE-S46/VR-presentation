@@ -288,16 +288,11 @@
     transform: translateY(100%) scale(0.6);
   }
 
-  /* Make sure the text input and mic are still centered and usable */
   .home-assistant-mic-wrapper {
-    width: 90vw;
+    width: 220px;
     bottom: 20px;
-    /* On mobile, center the mic wrapper even if the container is small,
-       but we need to override the left/transform since container is fixed right.
-       Actually, because mic-wrapper is absolute inside container, 
-       we need to shift it relative to the screen. */
-    position: fixed;
-    left: 50%;
+    position: absolute;
+    left: 45%;
     transform: translateX(-50%);
   }
 
