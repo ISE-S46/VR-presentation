@@ -12,9 +12,8 @@ function AssistantMic() {
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [transcriptText, setTranscriptText] = useState("");
-  const [aiResponseText, setAiResponseText] = useState("");
+  const [aiResponseText, setAiResponseText] = useState("Hi! I am the official ETC Assistant. How can I help you today?");
   const [textInput, setTextInput] = useState("");
-  const [hasGreeted, setHasGreeted] = useState(false);
   const navigate = useNavigate();
 
   // Conversation History and System Prompt (Knowledge Injection)
@@ -47,46 +46,15 @@ If the user asks to see, go to, or learn about a specific topic/page, you MUST p
 - For Projects, Portfolio, or Demos: Briefly mention a couple of key projects (e.g. AI Role-play, VR Patient Safety). Append [NAV_/OurProjects]
 - For Home page: Append [NAV_/Home]
 Example: "Here is our Introduction. ETC is a multi-disciplinary centre integrating AI, IoT, and Immersive Media to help industries innovate. Let's head there now! [NAV_/Introduction]"`
+    },
+    {
+      role: "assistant",
+      content: "Hi! I am the official ETC Assistant. How can I help you today?"
     }
   ]);
 
   const ctx = useContext(CharacterContext);
   const recognitionRef = useRef(null);
-
-  // Auto-Greeting: After user clicks the "Start" overlay, play the greeting with TTS audio
-  const triggerGreeting = async () => {
-    if (hasGreeted) return;
-    setHasGreeted(true);
-
-    const greetingText = "Hi there! Welcome to ETC. I'm your virtual assistant. Feel free to ask me anything, or just tap the mic!";
-    setAiResponseText(greetingText);
-
-    // Wait a moment for AudioContext to unlock after user click
-    await new Promise(r => setTimeout(r, 500));
-
-    try {
-      if (OPENAI_API_KEY) {
-        const audioResponse = await fetch("https://api.openai.com/v1/audio/speech", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${OPENAI_API_KEY}`
-          },
-          body: JSON.stringify({ model: "tts-1", voice: "nova", input: greetingText })
-        });
-        if (audioResponse.ok) {
-          const audioBlob = await audioResponse.blob();
-          const audioUrl = URL.createObjectURL(audioBlob);
-          if (ctx && ctx.speakLocal) {
-            await ctx.speakLocal(audioUrl, greetingText);
-            return;
-          }
-        }
-      }
-    } catch (err) {
-      console.error("Greeting TTS error:", err);
-    }
-  };
 
   // --- Core AI Chat Logic (shared between voice and text) ---
   const sendMessage = async (userMessage) => {
@@ -226,13 +194,6 @@ Example: "Here is our Introduction. ETC is a multi-disciplinary centre integrati
 
   return (
     <div className="home-assistant-mic-wrapper">
-      {/* "Click to Start" overlay — unlocks audio in browser */}
-      {!hasGreeted && (
-        <button className="home-assistant-start-btn" onClick={triggerGreeting}>
-          <span className="start-icon">💬</span>
-          <span>Tap to start chatting</span>
-        </button>
-      )}
       {/* User's transcript bubble */}
       {transcriptText && !isListening && (
         <div className="home-assistant-bubble user-bubble">
