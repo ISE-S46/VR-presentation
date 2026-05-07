@@ -8,6 +8,7 @@ import ProjectDetail from './pages/ProjectDetail';
 import DemoProject from './pages/DemoProject';
 import CollaborationOpportunities from './pages/CollaborationOpportunities';
 import LandingPage from './pages/LandingPage';
+import HomeAssistant from './components/HomeAssistant';
 import './styles/App.css';
 
 function App() {
@@ -37,6 +38,9 @@ function App() {
             <Route path="/OurProjects/CollaborationOpportunities" element={<CollaborationOpportunities />} />
           </Routes>
         </div>
+        
+        {/* Global 3D Avatar Assistant */}
+        <HomeAssistant />
 
       </div>
     </BrowserRouter>

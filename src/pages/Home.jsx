@@ -3,7 +3,7 @@ import TypewriterText from '../components/TypewriterText';
 import AnimatedCounter from '../components/AnimatedCounter';
 import etcBuildingImg from '../assets/etc-building.jpg';
 import BackButton from '../components/BackButton';
-import HomeAssistant from '../components/HomeAssistant';
+
 import '../styles/pages/Home.css';
 
 const STATS = [
@@ -197,7 +197,7 @@ export default function Home() {
       </div>
 
       {/* Floating 3D Assistant */}
-      <HomeAssistant />
+
     </div>
   );
 }
