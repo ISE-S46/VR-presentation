@@ -274,3 +274,39 @@
   0%, 100% { transform: translateY(0); opacity: 0.5; }
   50% { transform: translateY(-4px); opacity: 1; }
 }
+
+/* ===== Mobile Responsiveness ===== */
+@media (max-width: 768px) {
+  .home-assistant-container {
+    width: 250px; /* Smaller avatar on mobile */
+    height: 400px;
+    right: -20px; /* Push to the right edge */
+    bottom: -20px;
+  }
+
+  .home-assistant-container.collapsed {
+    transform: translateY(100%) scale(0.6);
+  }
+
+  /* Make sure the text input and mic are still centered and usable */
+  .home-assistant-mic-wrapper {
+    width: 90vw;
+    bottom: 20px;
+    /* On mobile, center the mic wrapper even if the container is small,
+       but we need to override the left/transform since container is fixed right.
+       Actually, because mic-wrapper is absolute inside container, 
+       we need to shift it relative to the screen. */
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .home-assistant-text-form {
+    padding: 6px;
+  }
+
+  .home-assistant-text-input {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+}
