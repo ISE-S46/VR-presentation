@@ -144,8 +144,7 @@ export default function Home() {
             <TypewriterText text="Enabling Technology Collaboratory" speed={50} delay={400} />
           </h1>
           <p className="hero-desc">
-            Research, development, and application of assistive and enabling technologies
-            to improve quality of life for persons with disabilities and the elderly.
+            ETC is a multidisciplinary centre that integrates core enabling technologies such as AI, IoT, and immersive media. It focuses on applied research and innovation to develop practical solutions, create new value, and solve real-world industry challenges
           </p>
         </div>
       </div>
