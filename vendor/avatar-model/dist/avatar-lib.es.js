@@ -455,7 +455,7 @@ function ut() {
 }
 function dt(e) {
 	let { width: t, height: n } = V(e), r = new Ee(75, t / n, .1, 1e4);
-	return r.position.set(0, 1.7, .8), r;
+	return r.position.set(0, 1.6, 1), r;
 }
 function ft(t) {
 	let { width: n, height: r } = V(t), i = new Ke({
@@ -2630,7 +2630,11 @@ var Dn = class {
 	isVisible = !0;
 	isDisposed = !1;
 	constructor(e, t = {}) {
-		this.canvas = e, this.options = t, this.scene = ut(), this.camera = dt(e), this.renderer = ft(e), this.controls = mt(this.camera, this.renderer), this.lightSetup = gt(this.scene, this.renderer), this.audioManager = new Tn(), this.timer = new He(), this.timer.connect(document), window.addEventListener("resize", this.onResizeBound), document.addEventListener("visibilitychange", this.onVisibilityBound), this.animate();
+		if (this.canvas = e, this.options = t, this.scene = ut(), this.camera = dt(e), t.cameraPosition) {
+			let [e, n, r] = t.cameraPosition;
+			this.camera.position.set(e, n, r);
+		}
+		this.renderer = ft(e), this.controls = mt(this.camera, this.renderer), this.lightSetup = gt(this.scene, this.renderer), this.audioManager = new Tn(), this.timer = new He(), this.timer.connect(document), window.addEventListener("resize", this.onResizeBound), document.addEventListener("visibilitychange", this.onVisibilityBound), this.animate();
 	}
 	async loadModel(e) {
 		if (this.animCtrl?.dispose(), this.animCtrl = null, this.lipSync = null, this.audioLipSync = null, this.character &&= (gn(this.character.object, this.character.mixer, this.character.actions), null), this.character = await pn(e, this.scene), !this.character.morphTargets) {
@@ -2706,7 +2710,8 @@ async function kn(e, t) {
 	let n = new Dn(e, {
 		ttsEndpoint: t.ttsEndpoint,
 		modelScale: t.modelScale,
-		modelPosition: t.modelPosition
+		modelPosition: t.modelPosition,
+		cameraPosition: t.cameraPosition
 	});
 	await n.loadModel(t.modelUrl);
 	let r = async () => {
