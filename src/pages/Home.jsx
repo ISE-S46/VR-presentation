@@ -7,10 +7,10 @@ import HomeAssistant from '../components/HomeAssistant';
 import '../styles/pages/Home.css';
 
 const STATS = [
-  { value: 12, suffix: '+', label: 'Active Projects' },
-  { value: 6, suffix: '', label: 'Key Partners' },
-  { value: 8, suffix: '', label: 'Focus Areas' },
-  { value: 2019, suffix: '', label: 'Established' },
+  { value: 4, suffix: '', label: 'Research Labs' },
+  { value: 3, suffix: '', label: 'Core Technologies' },
+  { value: 10, suffix: '+', label: 'Industry Partners' },
+  { value: 3, suffix: '', label: 'Published Patents' },
 ];
 
 const BENTO_ITEMS = [
@@ -144,7 +144,7 @@ export default function Home() {
             <TypewriterText text="Enabling Technology Collaboratory" speed={50} delay={400} />
           </h1>
           <p className="hero-desc">
-            ETC is a multidisciplinary centre that integrates core enabling technologies such as AI, IoT, and immersive media. It focuses on applied research and innovation to develop practical solutions, create new value, and solve real-world industry challenges
+            ETC is a multidisciplinary centre that integrates AI, IoT, and immersive technologies to develop innovative solutions and solve real industry problems.
           </p>
         </div>
       </div>
