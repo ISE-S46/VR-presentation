@@ -82,12 +82,14 @@
 }
 
 .hero-desc {
-  font-size: clamp(0.88rem, 2.5vw, 1.05rem);
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
   color: var(--text-secondary);
-  max-width: 520px;
-  margin: 0 auto;
-  line-height: 1.6;
-  animation: fadeIn 0.8s ease-out 1.8s both;
+  max-width: 750px; /* More room for the text to breathe */
+  margin: 0.75rem auto 0;
+  line-height: 1.7;
+  opacity: 0.9;
+  text-wrap: balance; /* Ensures lines are balanced and looks more orderly */
+  font-weight: 450;
 }
 
 /* ============================
