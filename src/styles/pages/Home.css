@@ -26,20 +26,21 @@
 }
 
 .hero-image-container {
-  width: 96%;
-  max-width: 1100px;
-  height: clamp(250px, 40vw, 380px);
+  width: 100%;
+  max-width: 1200px;
+  height: clamp(280px, 45vw, 420px);
   margin: 0 auto;
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+  /* Use a sophisticated radial mask to fade all edges into the background */
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0) 100%);
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0) 100%);
   position: relative;
   z-index: 1;
-  opacity: 0.95;
-  border-radius: 48px; /* Clean, elegant rounded corners instead of a weird dome */
+  opacity: 0.9;
+  border-radius: 80px; /* Much softer rounded corners */
   overflow: hidden;
-  box-shadow: 0 30px 60px -15px rgba(31, 122, 107, 0.2);
-  transform: translateZ(0); /* Force hardware acceleration */
-  animation: float 8s ease-in-out infinite;
+  box-shadow: 0 40px 100px -20px rgba(13, 148, 136, 0.3);
+  transform: translateZ(0);
+  animation: float 10s ease-in-out infinite;
 }
 
 /* Add inner dimension / glass reflection */
