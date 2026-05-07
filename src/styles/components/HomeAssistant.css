@@ -59,13 +59,13 @@
   height: 22px;
 }
 
-/* When avatar is visible, hide the toggle a bit behind */
+/* When avatar is visible, put the toggle button above the text input so it doesn't overlap */
 .home-assistant-toggle-btn:not(.collapsed) {
-  opacity: 0.6;
-  bottom: 16px;
-  right: 16px;
-  width: 36px;
-  height: 36px;
+  opacity: 0.7;
+  bottom: 110px;
+  right: 24px;
+  width: 40px;
+  height: 40px;
 }
 
 .home-assistant-toggle-btn:not(.collapsed):hover {
