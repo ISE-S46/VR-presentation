@@ -141,7 +141,6 @@ export default function HomeAssistant() {
     if (isListening) {
       // Stop recording — this triggers ondataavailable + onstop
       mediaRecorderRef.current?.stop();
-      setIsListening(false);
     } else {
       await startListening();
     }
@@ -158,13 +157,48 @@ export default function HomeAssistant() {
       setTranscriptText("");
       setAiResponseText("");
 
+      // --- Silence detection via AudioContext ---
+      const audioContext = new AudioContext();
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 512;
+      source.connect(analyser);
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      let silenceStart = null;
+      let stopped = false;
+      const SILENCE_THRESHOLD = 10;
+      const SILENCE_DURATION = 1400;
+
+      const checkSilence = () => {
+        if (stopped || !mediaRecorderRef.current || mediaRecorderRef.current.state === "inactive") return;
+
+        analyser.getByteFrequencyData(dataArray);
+        const volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+
+        if (volume < SILENCE_THRESHOLD) {
+          if (!silenceStart) silenceStart = Date.now();
+          else if (Date.now() - silenceStart > SILENCE_DURATION) {
+            stopped = true;
+            audioContext.close();
+            mediaRecorderRef.current?.stop();
+            return;
+          }
+        } else {
+          silenceStart = null;
+        }
+
+        requestAnimationFrame(checkSilence);
+      };
+
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) audioChunksRef.current.push(e.data);
       };
 
       mediaRecorder.onstop = async () => {
-        // Stop all mic tracks to release the mic indicator
+        stopped = true;
         stream.getTracks().forEach(track => track.stop());
+        setIsListening(false);
 
         const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
 
@@ -185,6 +219,7 @@ export default function HomeAssistant() {
       };
 
       mediaRecorder.start();
+      requestAnimationFrame(checkSilence);
 
     } catch (err) {
       console.error("Mic access denied:", err);
