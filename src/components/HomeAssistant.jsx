@@ -47,16 +47,67 @@ export default function HomeAssistant() {
 
   // Chat States
   const [transcriptText, setTranscriptText] = useState("");
-  const [aiResponseText, setAiResponseText] = useState("Hi! I am the official ETC Assistant. How can I help you today?");
+  const [aiResponseText, setAiResponseText] = useState(
+    "Hi! I am the official ETC Assistant. How can I help you today?"
+  );
 
   // State for the 3D avatar's script and audio synchronization
   const [latestScript, setLatestScript] = useState("");
   const [revealData, setRevealData] = useState(null);
 
-  // Use a ref to hold the navigation target so it doesn't trigger extra re-renders
+  // Refs
   const pendingNavRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
+
+  // SAFARI AUDIO UNLOCK
+  const audioUnlockedRef = useRef(false);
+
+  const unlockAudio = async () => {
+    if (audioUnlockedRef.current) return;
+
+    try {
+      const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+
+      if (AudioContextClass) {
+        const ctx = new AudioContextClass();
+
+        if (ctx.state === "suspended") {
+          await ctx.resume();
+        }
+
+        // Create tiny silent buffer
+        const buffer = ctx.createBuffer(1, 1, 22050);
+        const source = ctx.createBufferSource();
+
+        source.buffer = buffer;
+        source.connect(ctx.destination);
+
+        source.start(0);
+
+        audioUnlockedRef.current = true;
+
+        console.log("[Safari Fix] AudioContext unlocked");
+      } else {
+        // Fallback for older Safari
+        const audio = new Audio(
+          "data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAACAAACcQCA"
+        );
+
+        audio.volume = 0;
+
+        await audio.play();
+        audio.pause();
+
+        audioUnlockedRef.current = true;
+
+        console.log("[Safari Fix] HTMLAudio unlocked");
+      }
+    } catch (err) {
+      console.warn("[Safari Fix] Audio unlock failed:", err);
+    }
+  };
 
   // --- Synchronization Effect ---
   // Listens for the signal that the audio has downloaded and is ready to play
@@ -70,7 +121,11 @@ export default function HomeAssistant() {
       if (pendingNavRef.current) {
         // Capture the route in case pendingNavRef gets cleared quickly
         const route = pendingNavRef.current;
-        setTimeout(() => { navigate(route); }, 1500);
+
+        setTimeout(() => {
+          navigate(route);
+        }, 1500);
+
         pendingNavRef.current = null;
       }
     }
@@ -102,7 +157,6 @@ export default function HomeAssistant() {
       const enrichedMessage = `${SYSTEM_INSTRUCTIONS}\n\nUser Query: "${userMessage}"`;
       const aiMessage = await fetchGPTResponse(enrichedMessage);
 
-      // Parse [NAV_...] tag for voice navigation using a flexible regex
       let speakText = aiMessage;
       let navTarget = null;
       const navMatch = aiMessage.match(/^([\s\S]*?)\s*\[NAV_\s*(.*?)\s*\]/);
@@ -124,10 +178,12 @@ export default function HomeAssistant() {
       // Store the navigation target in the ref
       pendingNavRef.current = navTarget;
 
-      // Update the script. 
-      // FIX: Append a zero-width space if the text is identical to the last text.
-      // This forces CharacterViewer's useEffect to run even if the AI repeats itself.
-      setLatestScript(prev => prev === speakText ? speakText + '\u200B' : speakText);
+      // Force rerender if same text repeated
+      setLatestScript((prev) =>
+        prev === speakText
+          ? speakText + '\u200B'
+          : speakText
+      );
 
     } catch (e) {
       console.error("Chat error:", e);
@@ -138,6 +194,10 @@ export default function HomeAssistant() {
 
   // --- Voice Input ---
   const toggleListen = async () => {
+    // IMPORTANT: Safari audio unlock MUST happen
+    // inside direct user interaction
+    await unlockAudio();
+
     if (isListening) {
       // Stop recording — this triggers ondataavailable + onstop
       mediaRecorderRef.current?.stop();
@@ -148,8 +208,14 @@ export default function HomeAssistant() {
 
   const startListening = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true
+      });
+
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: "audio/webm"
+      });
+
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -157,21 +223,43 @@ export default function HomeAssistant() {
       setTranscriptText("");
       setAiResponseText("");
 
-      // --- Silence detection via AudioContext ---
-      const audioContext = new AudioContext();
-      const source = audioContext.createMediaStreamSource(stream);
+      // SAFARI SAFE AudioContext
+      const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+
+      const audioContext = new AudioContextClass();
+
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+      }
+
+      const source =
+        audioContext.createMediaStreamSource(stream);
+
       const analyser = audioContext.createAnalyser();
+
       analyser.fftSize = 512;
+
       source.connect(analyser);
 
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      const dataArray = new Uint8Array(
+        analyser.frequencyBinCount
+      );
+
       let silenceStart = null;
       let stopped = false;
+
       const SILENCE_THRESHOLD = 10;
       const SILENCE_DURATION = 1400;
 
       const checkSilence = () => {
-        if (stopped || !mediaRecorderRef.current || mediaRecorderRef.current.state === "inactive") return;
+        if (
+          stopped ||
+          !mediaRecorderRef.current ||
+          mediaRecorderRef.current.state === "inactive"
+        ) {
+          return;
+        }
 
         analyser.getByteFrequencyData(dataArray);
         const volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
@@ -231,6 +319,11 @@ export default function HomeAssistant() {
   // --- Text Input ---
   const handleTextSubmit = async (e) => {
     e.preventDefault();
+
+    // IMPORTANT: Safari audio unlock MUST happen
+    // inside direct user interaction
+    await unlockAudio();
+
     if (!textInput.trim() || isThinking) return;
     const msg = textInput.trim();
     setTextInput("");
@@ -245,19 +338,35 @@ export default function HomeAssistant() {
         title={isCollapsed ? "Show Assistant" : "Hide Assistant"}
       >
         {isCollapsed ? (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
         ) : (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="6 9 12 15 18 9" />
           </svg>
         )}
       </button>
 
       <div className={`home-assistant-container ${isCollapsed ? 'collapsed' : ''}`}>
-
-        <div className="home-assistant-canvas-wrapper" style={{ position: 'absolute', inset: 0 }}>
+        <div
+          className="home-assistant-canvas-wrapper"
+          style={{ position: 'absolute', inset: 0 }}
+        >
           <CharacterViewer
             modelPath="/model/FModel2.glb"
             ttsEndpoint={handleTTSFetch}
