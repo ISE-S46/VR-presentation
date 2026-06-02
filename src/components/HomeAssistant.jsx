@@ -105,6 +105,7 @@ export default function HomeAssistant() {
   );
   const [latestScript, setLatestScript] = useState("");
   const [activeProject, setActiveProject] = useState(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const pendingNavRef = useRef(null);
   const mediaRecorderRef = useRef(null);
@@ -152,6 +153,7 @@ export default function HomeAssistant() {
     clearSpeakTimer();
     broadcastAvatarStatus({ projectName: null, status: 'idle' });
     updateActiveProject(null);
+    setIsSpeaking(false);
   }, [broadcastAvatarStatus, clearSpeakTimer, updateActiveProject]);
 
   const revealAssistantResponse = useCallback((text, navTarget = pendingNavRef.current) => {
@@ -227,11 +229,13 @@ export default function HomeAssistant() {
 
       clearSpeakTimer();
       broadcastAvatarStatus({ projectName, status: 'speaking', durationMs });
+      setIsSpeaking(true);
 
       speakTimeoutRef.current = setTimeout(() => {
         broadcastAvatarStatus({ projectName: null, status: 'idle' });
         updateActiveProject(null);
         speakTimeoutRef.current = null;
+        setIsSpeaking(false);
       }, durationMs);
 
       revealAssistantResponse(text);
@@ -505,6 +509,15 @@ export default function HomeAssistant() {
     }
   }, [isListening, startListening, unlockAudio]);
 
+  const handleResetChat = useCallback(() => {
+    resetAvatarState();
+    setTranscriptText("");
+    setAiResponseText("Hi! I am the official ETC Assistant. How can I help you today?");
+    setLatestScript("");
+    setTextInput("");
+    showNotice("Conversation history has been reset.", "info");
+  }, [resetAvatarState, showNotice]);
+
   const handleTextSubmit = useCallback(async (e) => {
     e.preventDefault();
 
@@ -616,6 +629,16 @@ export default function HomeAssistant() {
             </div>
           )}
 
+          {(isListening || isSpeaking) && (
+            <div className={`home-assistant-waveform ${isListening ? 'listening' : ''}`}>
+              <div className="waveform-bar bar-1"></div>
+              <div className="waveform-bar bar-2"></div>
+              <div className="waveform-bar bar-3"></div>
+              <div className="waveform-bar bar-4"></div>
+              <div className="waveform-bar bar-5"></div>
+            </div>
+          )}
+
           {!activeProject && !isListening && !isThinking && (
             <div className="home-assistant-quick-row" aria-label="Suggested assistant questions">
               {QUICK_PROMPTS.map((item) => (
@@ -632,6 +655,19 @@ export default function HomeAssistant() {
           )}
 
           <form className="home-assistant-text-form" onSubmit={handleTextSubmit}>
+            <button
+              type="button"
+              className="home-assistant-reset-btn"
+              onClick={handleResetChat}
+              title="Reset Conversation"
+              disabled={isThinking || isListening}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              </svg>
+            </button>
             <input
               type="text"
               className="home-assistant-text-input"
