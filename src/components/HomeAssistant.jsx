@@ -224,7 +224,7 @@ export default function HomeAssistant() {
       }
 
       const charCount = text.length;
-      const durationMs = Math.max(4000, (charCount / 14) * 1000);
+      const durationMs = Math.max(4500, (charCount / 11.5) * 1000);
       const projectName = activeProjectRef.current;
 
       clearSpeakTimer();

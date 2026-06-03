@@ -37,7 +37,7 @@ export default async function handler(req, res) {
       instructions: `Speak in a warm and natural human tone with gentle expressiveness.
       Add small variations in pitch and rhythm to sound alive.
       Keep the delivery smooth, clear, and stable.`,
-      speed: 1.0,
+      speed: 0.88,
       response_format: normalizedFormat,
     });
 

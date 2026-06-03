@@ -254,9 +254,10 @@
 }
 
 .partner-marquee-container {
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
   width: 100%;
-  padding: 1.25rem 0;
+  padding: 2.8rem 0;
   position: relative;
   background: rgba(255, 255, 255, 0.4);
   border-top: 1px dashed rgba(15, 23, 42, 0.07);
@@ -439,6 +440,10 @@
 
   .partner-stat:last-child {
     border-bottom: 0;
+  }
+
+  .partner-marquee-container {
+    padding: 2.2rem 0;
   }
 
   .partner-marquee-track {

@@ -145,7 +145,7 @@ export default function OurPartners() {
       const L = spokenText.length;
       
       // Calculate total duration estimation (matching the avatar TTS calculation)
-      const durationMs = Math.max(4000, (L / 14) * 1000);
+      const durationMs = Math.max(4500, (L / 11.5) * 1000);
       const timeline = [];
 
       // Find all matches in internal centres
