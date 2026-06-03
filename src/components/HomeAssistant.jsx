@@ -228,7 +228,7 @@ export default function HomeAssistant() {
       const projectName = activeProjectRef.current;
 
       clearSpeakTimer();
-      broadcastAvatarStatus({ projectName, status: 'speaking', durationMs });
+      broadcastAvatarStatus({ projectName, status: 'speaking', durationMs, spokenText: text });
       setIsSpeaking(true);
 
       speakTimeoutRef.current = setTimeout(() => {

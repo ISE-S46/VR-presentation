@@ -1,64 +1,55 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
+import { useAvatarStatus } from '../hooks/useAvatarStatus';
 import '../styles/pages/OurPartners.css';
 
 const internalCentres = [
-  { name: 'Food Sustainability', icon: 'sprout', color: '#dc2626', areas: ['Agri-Food Tech', 'Future Foods'] },
-  { name: 'Environment Sustainability', icon: 'globe', color: '#059669', areas: ['Sustainable Materials', 'Energy Systems'] },
-  { name: 'Healthcare & Nutrition', icon: 'health', color: '#0891b2', areas: ['Applied Nutrition', 'Healthcare Engineering'] },
-  { name: 'Intelligent Systems', icon: 'systems', color: '#ca8a04', areas: ['Advanced Manufacturing', 'Robotics & Automation'] },
-];
-
-const externalGroups = [
-  {
-    category: 'Government & Education',
-    partners: [
-      { name: 'Ministry of Education Singapore', logo: '/logos/moe.png' },
-      { name: 'SkillsFuture SG', logo: '/logos/ssg.png' }
-    ]
+  { 
+    name: 'Food Sustainability', 
+    icon: 'sprout', 
+    color: '#dc2626', 
+    areas: ['Agri-Food Tech', 'Future Foods'],
+    keywords: ['food sustainability', 'agri-food', 'future foods']
   },
-  {
-    category: 'Healthcare',
-    partners: [
-      { name: 'Tan Tock Seng Hospital', logo: '/logos/ttsh.png' },
-      { name: 'Changi General Hospital (SingHealth)', logo: '/logos/cgh.png' }
-    ]
+  { 
+    name: 'Environment Sustainability', 
+    icon: 'globe', 
+    color: '#059669', 
+    areas: ['Sustainable Materials', 'Energy Systems'],
+    keywords: ['environment sustainability', 'sustainable materials', 'energy systems']
   },
-  {
-    category: 'Industry & Technology',
-    partners: [
-      { name: 'AWS', logo: '/logos/aws.png' },
-      { name: 'SBS Transit', logo: '/logos/sbs.png' },
-      { name: 'Certis', logo: '/logos/certis.png' },
-      { name: 'Metabots', logo: '/logos/metabots.png' },
-      { name: 'Kite Sense', logo: '/logos/kitesense.png' }
-    ]
+  { 
+    name: 'Healthcare & Nutrition', 
+    icon: 'health', 
+    color: '#0891b2', 
+    areas: ['Applied Nutrition', 'Healthcare Engineering'],
+    keywords: ['healthcare & nutrition', 'healthcare and nutrition', 'nutrition', 'applied nutrition', 'healthcare engineering']
   },
-  {
-    category: 'Research & Community',
-    partners: [
-      { name: 'JMA Research Company', logo: '/logos/jma.png' },
-      { name: 'Helen O\'Grady Drama Academy', logo: '/logos/helen.png' },
-    ]
-  }
+  { 
+    name: 'Intelligent Systems', 
+    icon: 'systems', 
+    color: '#ca8a04', 
+    areas: ['Advanced Manufacturing', 'Robotics & Automation'],
+    keywords: ['intelligent systems', 'advanced manufacturing', 'robotics', 'automation']
+  },
 ];
 
 const govHealthcarePartners = [
-  { name: 'Ministry of Education Singapore', logo: '/logos/moe.png' },
-  { name: 'SkillsFuture SG', logo: '/logos/ssg.png' },
-  { name: 'Tan Tock Seng Hospital', logo: '/logos/ttsh.png' },
-  { name: 'Changi General Hospital (SingHealth)', logo: '/logos/cgh.png' }
+  { name: 'Ministry of Education Singapore', logo: '/logos/moe.png', keywords: ['ministry of education', 'moe', 'education'] },
+  { name: 'SkillsFuture SG', logo: '/logos/ssg.png', keywords: ['skillsfuture', 'ssg'] },
+  { name: 'Tan Tock Seng Hospital', logo: '/logos/ttsh.png', keywords: ['tan tock seng', 'ttsh'] },
+  { name: 'Changi General Hospital (SingHealth)', logo: '/logos/cgh.png', keywords: ['changi general', 'cgh', 'singhealth'] }
 ];
 
 const techCommunityPartners = [
-  { name: 'AWS', logo: '/logos/aws.png' },
-  { name: 'SBS Transit', logo: '/logos/sbs.png' },
-  { name: 'Certis', logo: '/logos/certis.png' },
-  { name: 'Metabots', logo: '/logos/metabots.png' },
-  { name: 'Kite Sense', logo: '/logos/kitesense.png' },
-  { name: 'JMA Research Company', logo: '/logos/jma.png' },
-  { name: 'Helen O\'Grady Drama Academy', logo: '/logos/helen.png' }
+  { name: 'AWS', logo: '/logos/aws.png', keywords: ['aws', 'amazon web services'] },
+  { name: 'SBS Transit', logo: '/logos/sbs.png', keywords: ['sbs transit', 'sbs'] },
+  { name: 'Certis', logo: '/logos/certis.png', keywords: ['certis'] },
+  { name: 'Metabots', logo: '/logos/metabots.png', keywords: ['metabots'] },
+  { name: 'Kite Sense', logo: '/logos/kitesense.png', keywords: ['kite sense', 'kitesense'] },
+  { name: 'JMA Research Company', logo: '/logos/jma.png', keywords: ['jma', 'jma research'] },
+  { name: 'Helen O\'Grady Drama Academy', logo: '/logos/helen.png', keywords: ['helen o\'grady', 'helen ogrady', 'drama academy'] }
 ];
 
 const partnershipStats = [
@@ -108,33 +99,36 @@ function PartnerIcon({ name }) {
   );
 }
 
-function MarqueeRow({ partners, direction = 'left', speed = '35s' }) {
+function MarqueeRow({ partners, direction = 'left', speed = '35s', highlightedPartnerName }) {
   // Multiply the elements to form a seamless loop
   const repeatedPartners = [...partners, ...partners, ...partners, ...partners, ...partners];
 
   return (
     <div className={`partner-marquee-container marquee-${direction}`}>
       <div className="partner-marquee-track" style={{ animationDuration: speed }}>
-        {repeatedPartners.map((p, idx) => (
-          <div className="marquee-logo-item" key={idx}>
-            <div className="marquee-logo-wrapper">
-              <img
-                src={p.logo}
-                alt={p.name}
-                className="marquee-logo-img"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  const fb = e.target.nextSibling;
-                  if (fb) fb.style.display = 'block';
-                }}
-              />
-              <span className="marquee-logo-fallback" style={{ display: 'none' }}>
-                {p.name.charAt(0)}
-              </span>
+        {repeatedPartners.map((p, idx) => {
+          const isHighlighted = p.name === highlightedPartnerName;
+          return (
+            <div className={`marquee-logo-item ${isHighlighted ? 'highlighted' : ''}`} key={idx}>
+              <div className="marquee-logo-wrapper">
+                <img
+                  src={p.logo}
+                  alt={p.name}
+                  className="marquee-logo-img"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    const fb = e.target.nextSibling;
+                    if (fb) fb.style.display = 'block';
+                  }}
+                />
+                <span className="marquee-logo-fallback" style={{ display: 'none' }}>
+                  {p.name.charAt(0)}
+                </span>
+              </div>
+              <span className="marquee-logo-tooltip">{p.name}</span>
             </div>
-            <span className="marquee-logo-tooltip">{p.name}</span>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -142,9 +136,42 @@ function MarqueeRow({ partners, direction = 'left', speed = '35s' }) {
 
 export default function OurPartners() {
   const navigate = useNavigate();
+  const { status, spokenText } = useAvatarStatus();
+  const [highlightedPartner, setHighlightedPartner] = useState(null);
+
+  useEffect(() => {
+    if (status === 'speaking' && spokenText) {
+      const lowercaseText = spokenText.toLowerCase();
+      let matchedName = null;
+
+      // Scan internal centres keywords
+      for (const c of internalCentres) {
+        if (c.keywords.some(kw => lowercaseText.includes(kw))) {
+          matchedName = c.name;
+          break;
+        }
+      }
+
+      // Scan external partners keywords if no internal centre matched
+      if (!matchedName) {
+        for (const p of [...govHealthcarePartners, ...techCommunityPartners]) {
+          if (p.keywords.some(kw => lowercaseText.includes(kw))) {
+            matchedName = p.name;
+            break;
+          }
+        }
+      }
+
+      setHighlightedPartner(matchedName);
+    } else {
+      setHighlightedPartner(null);
+    }
+  }, [status, spokenText]);
+
+  const hasHighlight = highlightedPartner !== null;
 
   return (
-    <div className="page-container partners-page animate-fade-in">
+    <div className={`page-container partners-page animate-fade-in ${hasHighlight ? 'has-highlight' : ''}`}>
       <BackButton onClick={() => navigate('/Home')} />
 
       <div className="page-header">
@@ -178,30 +205,33 @@ export default function OurPartners() {
           <div className="header-divider" />
         </div>
         <div className="internal-partner-list">
-          {internalCentres.map((c, i) => (
-            <div key={i} className="internal-partner-row" style={{ '--partner-accent': c.color }}>
-              <div className="partner-row-index">0{i + 1}</div>
-              <div className="partner-row-icon-wrapper" aria-hidden="true">
-                <PartnerIcon name={c.icon} />
-              </div>
-              <div className="partner-row-info">
-                <h3>{c.name}</h3>
-                <div className="partner-tags">
-                  {c.areas.map(a => (
-                    <span
-                      key={a}
-                      className="partner-tag"
-                      style={{
-                        borderColor: `${c.color}25`,
-                        color: c.color
-                      }}>
-                      {a}
-                    </span>
-                  ))}
+          {internalCentres.map((c, i) => {
+            const isHighlighted = c.name === highlightedPartner;
+            return (
+              <div key={i} className={`internal-partner-row ${isHighlighted ? 'highlighted' : ''}`} style={{ '--partner-accent': c.color }}>
+                <div className="partner-row-index">0{i + 1}</div>
+                <div className="partner-row-icon-wrapper" aria-hidden="true">
+                  <PartnerIcon name={c.icon} />
+                </div>
+                <div className="partner-row-info">
+                  <h3>{c.name}</h3>
+                  <div className="partner-tags">
+                    {c.areas.map(a => (
+                      <span
+                        key={a}
+                        className="partner-tag"
+                        style={{
+                          borderColor: `${c.color}25`,
+                          color: c.color
+                        }}>
+                        {a}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -214,10 +244,20 @@ export default function OurPartners() {
 
         <div className="external-marquee-wall">
           <div className="marquee-lane-label">Government & Healthcare</div>
-          <MarqueeRow partners={govHealthcarePartners} direction="left" speed="40s" />
+          <MarqueeRow 
+            partners={govHealthcarePartners} 
+            direction="left" 
+            speed="40s" 
+            highlightedPartnerName={highlightedPartner} 
+          />
 
           <div className="marquee-lane-label">Technology & Community</div>
-          <MarqueeRow partners={techCommunityPartners} direction="right" speed="55s" />
+          <MarqueeRow 
+            partners={techCommunityPartners} 
+            direction="right" 
+            speed="55s" 
+            highlightedPartnerName={highlightedPartner} 
+          />
         </div>
       </section>
     </div>

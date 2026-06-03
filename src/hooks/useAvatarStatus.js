@@ -10,13 +10,13 @@ import { useEffect, useState } from 'react';
  */
 export function useAvatarStatus() {
   const [avatarState, setAvatarState] = useState(
-    () => window.currentAvatarState || { projectName: null, status: 'idle' }
+    () => window.currentAvatarState || { projectName: null, status: 'idle', spokenText: null }
   );
 
   useEffect(() => {
     const handleBroadcast = (e) => {
-      const { projectName, status } = e.detail;
-      setAvatarState({ projectName, status });
+      const { projectName, status, spokenText } = e.detail;
+      setAvatarState({ projectName, status, spokenText });
     };
 
     window.addEventListener('avatar-status-broadcast', handleBroadcast);
