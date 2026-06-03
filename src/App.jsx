@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 import LiveClock from './components/LiveClock';
-import NetworkBackground from './components/NetworkBackground';
+import InteractiveMeshBackground from './components/InteractiveMeshBackground';
 import ScrollProgress from './components/ScrollProgress';
 import PresentationTour from './components/PresentationTour';
 import './styles/App.css';
@@ -77,7 +77,7 @@ function App() {
       <div className="app-root">
 
         {/* Background elements stay persistent across all pages */}
-        <NetworkBackground />
+        <InteractiveMeshBackground />
         <div className="bg-animation">
           <div className="bg-orb bg-orb-1"></div>
           <div className="bg-orb bg-orb-2"></div>
