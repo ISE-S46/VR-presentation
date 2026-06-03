@@ -142,27 +142,72 @@ export default function OurPartners() {
   useEffect(() => {
     if (status === 'speaking' && spokenText) {
       const lowercaseText = spokenText.toLowerCase();
-      let matchedName = null;
+      const L = spokenText.length;
+      
+      // Calculate total duration estimation (matching the avatar TTS calculation)
+      const durationMs = Math.max(4000, (L / 14) * 1000);
+      const timeline = [];
 
-      // Scan internal centres keywords
+      // Find all matches in internal centres
       for (const c of internalCentres) {
-        if (c.keywords.some(kw => lowercaseText.includes(kw))) {
-          matchedName = c.name;
-          break;
-        }
-      }
-
-      // Scan external partners keywords if no internal centre matched
-      if (!matchedName) {
-        for (const p of [...govHealthcarePartners, ...techCommunityPartners]) {
-          if (p.keywords.some(kw => lowercaseText.includes(kw))) {
-            matchedName = p.name;
-            break;
+        for (const kw of c.keywords) {
+          const idx = lowercaseText.indexOf(kw);
+          if (idx !== -1) {
+            const startMs = (idx / L) * durationMs;
+            const endMs = Math.min(durationMs, ((idx + kw.length) / L) * durationMs + 2800); // keep highlighted longer for readability
+            timeline.push({ name: c.name, type: 'internal', start: startMs, end: endMs, index: idx });
+            break; // Match once per centre
           }
         }
       }
 
-      setHighlightedPartner(matchedName);
+      // Find all matches in external partners
+      for (const p of [...govHealthcarePartners, ...techCommunityPartners]) {
+        for (const kw of p.keywords) {
+          const idx = lowercaseText.indexOf(kw);
+          if (idx !== -1) {
+            const startMs = (idx / L) * durationMs;
+            const endMs = Math.min(durationMs, ((idx + kw.length) / L) * durationMs + 2800); // keep highlighted longer for readability
+            timeline.push({ name: p.name, type: 'external', start: startMs, end: endMs, index: idx });
+            break; // Match once per partner
+          }
+        }
+      }
+
+      // Sort timeline events by chronological appearance in spoken text
+      timeline.sort((a, b) => a.index - b.index);
+
+      const timers = [];
+
+      timeline.forEach((event) => {
+        // Timer to trigger the highlight & scroll
+        const startTimer = setTimeout(() => {
+          setHighlightedPartner(event.name);
+          
+          if (event.type === 'external') {
+            const element = document.querySelector('.external-marquee-wall');
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          } else {
+            const element = document.querySelector('.internal-partner-list');
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
+        }, event.start);
+        timers.push(startTimer);
+
+        // Timer to remove this specific highlight
+        const endTimer = setTimeout(() => {
+          setHighlightedPartner((current) => (current === event.name ? null : current));
+        }, event.end);
+        timers.push(endTimer);
+      });
+
+      return () => {
+        timers.forEach(clearTimeout);
+      };
     } else {
       setHighlightedPartner(null);
     }
