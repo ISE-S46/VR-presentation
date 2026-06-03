@@ -20,8 +20,17 @@
   border-radius: 50%;
   transform: translate(-50%, -50%);
   mix-blend-mode: multiply; /* Blends pastel blobs beautifully on a light background */
-  will-change: left, top;
+  will-change: left, top, transform; /* Hardware acceleration optimization */
   pointer-events: none;
+}
+
+.mesh-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .blob-teal {
