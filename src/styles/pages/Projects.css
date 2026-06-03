@@ -5,14 +5,14 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
 }
 
 .projects-grid.double-column {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.25rem;
-  max-width: 1040px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.8rem;
+  max-width: 880px;
   width: 100%;
 }
 
@@ -21,17 +21,49 @@
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1.5rem;
   cursor: pointer;
-  padding: 2.2rem 2rem;
+  padding: 3rem 2.5rem;
   border-radius: var(--radius-xl);
   background: var(--bg-card);
   border: 1px solid var(--border);
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
               border-color 0.3s ease, 
-              box-shadow 0.3s ease,
+              box-shadow 0.4s ease,
               background-color 0.3s ease;
   overflow: hidden;
+  min-height: 280px;
+}
+
+/* Watermark Backdrop */
+.project-category-watermark {
+  position: absolute;
+  right: -30px;
+  bottom: -30px;
+  width: 200px;
+  height: 200px;
+  opacity: 0.025;
+  transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.project-category-card--teal .project-category-watermark {
+  color: var(--accent-teal);
+}
+
+.project-category-card--violet .project-category-watermark {
+  color: var(--accent-violet);
+}
+
+.watermark-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.project-category-card:hover .project-category-watermark {
+  opacity: 0.065;
+  transform: scale(1.15) rotate(-8deg);
 }
 
 /* Subtle corner gradient glow */
@@ -39,37 +71,41 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 180px;
-  height: 180px;
+  width: 220px;
+  height: 220px;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.5;
+  opacity: 0.4;
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .project-category-glow--teal {
-  background: radial-gradient(circle at 100% 100%, rgba(31, 122, 107, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle at 100% 100%, rgba(31, 122, 107, 0.16) 0%, transparent 70%);
 }
 
 .project-category-glow--violet {
-  background: radial-gradient(circle at 100% 100%, rgba(124, 58, 237, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle at 100% 100%, rgba(124, 58, 237, 0.14) 0%, transparent 70%);
 }
 
 .project-category-card:hover .project-category-glow {
   opacity: 0.95;
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 /* Card Hover States */
+.project-category-card:hover {
+  transform: translateY(-6px);
+}
+
 .project-category-card--teal:hover {
-  border-color: rgba(31, 122, 107, 0.35);
-  box-shadow: 0 12px 30px rgba(31, 122, 107, 0.08), 0 2px 8px rgba(0, 0, 0, 0.02);
+  border-color: rgba(31, 122, 107, 0.38);
+  box-shadow: 0 20px 38px rgba(31, 122, 107, 0.09), 0 4px 12px rgba(0, 0, 0, 0.02);
   background: var(--bg-card-hover);
 }
 
 .project-category-card--violet:hover {
-  border-color: rgba(124, 58, 237, 0.35);
-  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.08), 0 2px 8px rgba(0, 0, 0, 0.02);
+  border-color: rgba(124, 58, 237, 0.38);
+  box-shadow: 0 20px 38px rgba(124, 58, 237, 0.09), 0 4px 12px rgba(0, 0, 0, 0.02);
   background: var(--bg-card-hover);
 }
 
@@ -83,8 +119,8 @@
 
 /* Glassmorphic Icon Wrapper */
 .project-category-icon-wrapper {
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -133,14 +169,14 @@
 .project-category-body {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.6rem;
   z-index: 1;
 }
 
 .project-category-title {
   color: var(--text-heading);
   margin: 0;
-  font-size: 1.35rem;
+  font-size: 1.55rem;
   font-weight: 700;
   font-family: 'Space Grotesk', sans-serif;
   letter-spacing: -0.01em;
@@ -148,7 +184,7 @@
 
 .project-category-desc {
   line-height: 1.6;
-  font-size: 0.92rem;
+  font-size: 0.94rem;
   color: var(--text-secondary);
   margin: 0;
 }
@@ -156,7 +192,7 @@
 /* Explore Link & Hover Animation */
 .project-explore-link {
   margin-top: auto;
-  padding-top: 0.6rem;
+  padding-top: 0.8rem;
   font-weight: 700;
   font-size: 0.9rem;
   display: flex;
@@ -188,6 +224,11 @@
     grid-template-columns: 1fr;
     gap: 1.25rem;
     padding: 0 0.5rem;
+  }
+
+  .project-category-card {
+    padding: 2.2rem 2rem;
+    min-height: auto;
   }
 }
 

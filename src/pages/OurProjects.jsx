@@ -39,26 +39,6 @@ function TargetIcon({ className }) {
   );
 }
 
-function HandshakeIcon({ className }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M11 17 8 20a2.8 2.8 0 0 1-4-4l3-3"></path>
-      <path d="m13 7 3-3a2.8 2.8 0 0 1 4 4l-3 3"></path>
-      <path d="M8 13h3l2 2a2 2 0 0 0 3-2.6l-1-1.4"></path>
-      <path d="m12 8 4 4"></path>
-      <path d="m7 12 5-5"></path>
-    </svg>
-  );
-}
-
 function ChevronRightIcon({ className }) {
   return (
     <svg
@@ -94,14 +74,6 @@ const categories = [
     desc: 'Experience a featured smart mobility solution in action', 
     theme: 'violet',
     iconComponent: TargetIcon 
-  },
-  { 
-    id: 'CollaborationOpportunities', 
-    number: '3.3', 
-    title: 'Collaborate', 
-    desc: 'Find natural ways to partner with ETC on applied research', 
-    theme: 'teal',
-    iconComponent: HandshakeIcon 
   }
 ];
 
@@ -129,6 +101,11 @@ export default function OurProjects() {
                 onClick={() => navigate(`/OurProjects/${cat.id}`)}
                 aria-label={`Explore ${cat.title}`}
               >
+                {/* Visual backdrop watermark icon */}
+                <div className="project-category-watermark" aria-hidden="true">
+                  <Icon className="watermark-svg" />
+                </div>
+
                 {/* Visual glow element */}
                 <div className={`project-category-glow project-category-glow--${cat.theme}`} />
                 
