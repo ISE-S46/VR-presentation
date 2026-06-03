@@ -4,6 +4,7 @@ import TypewriterText from '../components/TypewriterText';
 import AnimatedCounter from '../components/AnimatedCounter';
 import etcBuildingImg from '../assets/etc-building.jpg';
 import BackButton from '../components/BackButton';
+import LabPopups from '../components/LabPopups';
 import { useSoundEffects } from '../hooks/useSoundEffects';
 
 import '../styles/pages/Home.css';
@@ -145,6 +146,9 @@ export default function Home() {
 
   return (
     <div className="page-container animate-fade-in">
+      {/* Lab photo popups, synced to the avatar naming each lab */}
+      <LabPopups />
+
       {/* Back to Welcome Page */}
       <BackButton onClick={() => handleNavClick('/')} label="Back to Welcome Page" />
 

@@ -2,6 +2,21 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createAvatarScene } from 'avatar-model';
 import '../styles/components/CharacterViewer.css';
 
+function supportsWebGL() {
+  try {
+    const testCanvas = document.createElement('canvas');
+    const gl =
+      testCanvas.getContext('webgl2') ||
+      testCanvas.getContext('webgl') ||
+      testCanvas.getContext('experimental-webgl');
+
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
+    return Boolean(gl);
+  } catch {
+    return false;
+  }
+}
+
 function AvatarCanvas({
   modelPath,
   audioURL,
@@ -38,6 +53,12 @@ function AvatarCanvas({
 
     (async () => {
       try {
+        if (!supportsWebGL()) {
+          setLoadState('error');
+          setLoadError('Avatar standby mode. Enable browser hardware acceleration for the full 3D presenter.');
+          return;
+        }
+
         const { controller: avatarController, destroy } = await createAvatarScene(canvas, {
           modelUrl: modelPath,
           audioUrl: audioURL,
@@ -58,7 +79,6 @@ function AvatarCanvas({
         destroyRef.current = destroy;
         setLoadState('ready');
       } catch (err) {
-        console.error('[CharacterViewer] Failed to init avatar:', err);
         if (!cancelled) {
           setLoadState('error');
           setLoadError(err?.message || 'Unable to load the avatar model.');
@@ -91,7 +111,7 @@ function AvatarCanvas({
       )}
       {loadState === 'error' && (
         <div className="character-viewer-loading character-viewer-loading--error" role="status">
-          <span className="character-viewer-error-icon">!</span>
+          <span className="character-viewer-error-icon">3D</span>
           <span>{loadError}</span>
         </div>
       )}

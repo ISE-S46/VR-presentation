@@ -6,10 +6,10 @@ import { useAvatarStatus } from '../hooks/useAvatarStatus';
 import '../styles/pages/Projects.css';
 
 const DEMO_HIGHLIGHTS = [
-  { value: 'LiDAR', label: 'Obstacle sensing' },
-  { value: 'CV', label: 'Visual detection' },
-  { value: 'Realtime', label: 'Path correction' },
-  { value: 'Autonomy', label: 'User remains in control' },
+  { value: 'VR Simulation', label: 'Emergency Scenario' },
+  { value: 'Verification', label: 'Step-by-step checks' },
+  { value: 'Procedure', label: 'Verify medicine orders' },
+  { value: 'Video Log', label: 'Review & self-improvement' },
 ];
 
 export default function DemoProject() {
@@ -24,7 +24,7 @@ export default function DemoProject() {
       <div className="page-header">
         <span className="section-label">Live Demo</span>
         <h1 className="page-title">Featured Demo</h1>
-        <p className="page-subtitle">Experience a featured smart mobility solution in action</p>
+        <p className="page-subtitle">Experience a featured serious training simulation in action</p>
       </div>
 
       <div className="glass-card demo-section">
@@ -45,7 +45,7 @@ export default function DemoProject() {
           ) : (
             <div className="demo-video-fallback" role="status">
               <h2>Demo video unavailable</h2>
-              <p>The smart wheelchair summary is still available below.</p>
+              <p>The patient safety serious training summary is still available below.</p>
             </div>
           )}
         </div>
@@ -61,20 +61,18 @@ export default function DemoProject() {
 
         <h2 className="demo-content-title">How it works</h2>
         <AvatarExplainButton
-          projectName="SmartWheelchair"
-          projectTitle="Smart Wheelchair Demo (Featured Demo)"
-          customPrompt="Explain the Smart Wheelchair Featured Demo project in detail. Describe how standard motorized wheelchairs are augmented with LiDAR sensors and Computer Vision (CV) algorithms to automatically detect obstacles in real-time, gently correcting the path to prevent collisions while preserving user autonomy."
+          projectName="PatientSafetyVR"
+          projectTitle="Patient Safety VR Training (Featured Demo)"
+          customPrompt="Summarize the Patient Safety VR Training featured demo briefly and concisely (under 3 sentences) in English. Explain that it simulates emergency department incidents in VR because these events are rare but critical. Mention that it verifies procedural steps like checking medicine upon delivery, and records the session for review and self-improvement."
           avatarState={avatarState}
           style={{ marginBottom: '1rem' }}
         />
         <p className="demo-content-desc">
-          This demonstration highlights our integration of LiDAR sensors and Computer Vision (CV)
-          algorithms onto a standard motorized wheelchair. The system automatically detects obstacles
-          in real-time and gently corrects the user's path, preventing collisions while maintaining user autonomy.
+          This featured demo showcases an emergency department simulation in Virtual Reality (VR). Since critical emergency incidents do not occur frequently, the simulation is designed to test how personnel respond in real-world scenarios and verify if correct procedural steps are performed (for example, verifying medications upon delivery). Every session is video-recorded to log performance and provide feedback for continuous self-improvement.
         </p>
 
         <div className="demo-tag-container">
-          {['LiDAR', 'Computer Vision', 'Real-time', 'Autonomous'].map(tag => (
+          {['Virtual Reality', 'Emergency Protocol', 'Patient Safety', 'Video Feedback'].map(tag => (
             <span key={tag} className="pill-tag pill-tag--teal">{tag}</span>
           ))}
         </div>

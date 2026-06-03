@@ -3,17 +3,25 @@ import { useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
 import BackButton from '../components/BackButton';
 import { useSoundEffects } from '../hooks/useSoundEffects';
+import introLabImage from '../assets/intro-lab.jpg';
 import '../styles/pages/Introduction.css';
 
 const FOCUS_AREAS = [
-  { name: 'Assistive Technology', icon: 'heart' },
-  { name: 'Smart Mobility', icon: 'activity' },
-  { name: 'Rehabilitation Engineering', icon: 'hexagon' },
-  { name: 'Human-Computer Interaction', icon: 'monitor' },
-  { name: 'Wearable Devices', icon: 'watch' },
-  { name: 'Smart Home Systems', icon: 'home' },
-  { name: 'Sensory Substitution', icon: 'eye' },
-  { name: 'Robotics & Automation', icon: 'cpu' },
+  { name: 'Assistive Technology', desc: 'Inclusive tools that improve daily independence.', icon: 'heart' },
+  { name: 'Smart Mobility', desc: 'Connected systems for safer, more adaptive movement.', icon: 'activity' },
+  { name: 'Rehabilitation Engineering', desc: 'Applied prototypes for recovery and clinical support.', icon: 'hexagon' },
+  { name: 'Human-Computer Interaction', desc: 'Interfaces that make complex technology easier to use.', icon: 'monitor' },
+  { name: 'Wearable Devices', desc: 'Sensor-led devices for monitoring and feedback.', icon: 'watch' },
+  { name: 'Smart Home Systems', desc: 'Ambient intelligence for accessible living spaces.', icon: 'home' },
+  { name: 'Sensory Substitution', desc: 'Alternative feedback channels for perception and access.', icon: 'eye' },
+  { name: 'Robotics & Automation', desc: 'Automation that supports people, training, and operations.', icon: 'cpu' },
+];
+
+const INTRO_STATS = [
+  { value: '8', label: 'Focus areas' },
+  { value: 'AI + IoT', label: 'Applied technology stack' },
+  { value: 'XR', label: 'Immersive test-bedding' },
+  { value: 'Industry', label: 'Collaboration driven' },
 ];
 
 const ICON_PATHS = {
@@ -110,7 +118,7 @@ export default function Introduction() {
       >
         <span className="section-label">About Us</span>
         <h1 className="page-title">Introduction</h1>
-        <p className="page-subtitle">Welcome to the Enabling Technology Collaboratory</p>
+        <p className="page-subtitle">Applied research, immersive technology, and industry collaboration in one test-bedding space.</p>
       </motion.div>
 
       <motion.div
@@ -119,17 +127,41 @@ export default function Introduction() {
         initial="hidden"
         animate="visible"
       >
-        {/* Our Mission Section */}
-        <motion.div className="mission-card" variants={itemVariants}>
-          <div className="mission-header">
-            <div className="mission-icon">
-              <Icon name="mission" width="24" height="24" />
+        <motion.section className="intro-hero-panel" variants={itemVariants}>
+          <div className="intro-hero-copy">
+            <div className="mission-header">
+              <div className="mission-icon">
+                <Icon name="mission" width="24" height="24" />
+              </div>
+              <span className="intro-kicker">Enabling Technology Collaboratory</span>
             </div>
-            <h2 className="mission-title">Our Mission</h2>
+            <h2 className="mission-title">Turning emerging technology into real-world solutions.</h2>
+            <p className="mission-text">
+              ETC is a multidisciplinary centre where AI, IoT, immersive media, and enabling technologies are prototyped, tested, and shaped with industry partners.
+            </p>
+            <div className="mission-points" aria-label="ETC mission highlights">
+              <span>Applied research for industry challenges</span>
+              <span>Test-bedding space for validation</span>
+              <span>Human-centred technology outcomes</span>
+            </div>
           </div>
-          <p className="mission-text">
-            ETC is a multidisciplinary centre that integrates enabling technologies to drive innovation and create value for industry. It focuses on applied research in AI and Machine Learning, IoT, and immersive media, with dedicated collaboration spaces. The Innovation space serves as a test-bedding facility to develop and validate solutions for real-world industry challenges.
-          </p>
+
+          <div className="intro-hero-media" aria-label="ETC lab environment">
+            <img src={introLabImage} alt="ETC lab environment with immersive technology setup" />
+            <div className="intro-media-caption">
+              <span className="intro-media-dot"></span>
+              Innovation space for applied prototyping
+            </div>
+          </div>
+        </motion.section>
+
+        <motion.div className="intro-stats-row" variants={itemVariants}>
+          {INTRO_STATS.map((stat) => (
+            <div className="intro-stat" key={stat.label}>
+              <strong>{stat.value}</strong>
+              <span>{stat.label}</span>
+            </div>
+          ))}
         </motion.div>
 
         {/* Focus Areas Section */}
@@ -154,7 +186,10 @@ export default function Introduction() {
                 <div className="focus-icon-wrapper">
                   <Icon name={area.icon} />
                 </div>
-                <span className="focus-card-text">{area.name}</span>
+                <div className="focus-card-copy">
+                  <span className="focus-card-text">{area.name}</span>
+                  <span className="focus-card-desc">{area.desc}</span>
+                </div>
               </motion.div>
             ))}
           </div>

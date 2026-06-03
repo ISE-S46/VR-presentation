@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { text, format = "wav" } = req.body;
+    const { text, format = "wav", speed } = req.body;
     const normalizedFormat = String(format).toLowerCase();
 
     if (!openai) {
@@ -30,6 +30,15 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Unsupported audio format" });
     }
 
+    // Parse speed parameter (between 0.5 and 1.5)
+    let speechSpeed = 0.97;
+    if (speed !== undefined) {
+      const parsed = parseFloat(speed);
+      if (!isNaN(parsed) && parsed >= 0.5 && parsed <= 1.5) {
+        speechSpeed = parsed;
+      }
+    }
+
     const audio = await openai.audio.speech.create({
       model: "gpt-4o-mini-tts",
       voice: MODEL_VOICE,
@@ -37,7 +46,7 @@ export default async function handler(req, res) {
       instructions: `Speak in a warm and natural human tone with gentle expressiveness.
       Add small variations in pitch and rhythm to sound alive.
       Keep the delivery smooth, clear, and stable.`,
-      speed: 0.88,
+      speed: speechSpeed,
       response_format: normalizedFormat,
     });
 

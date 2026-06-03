@@ -6,7 +6,7 @@
   width: 420px;
   height: 580px;
   pointer-events: none;
-  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
   transform-origin: bottom right;
 }
 
@@ -14,6 +14,17 @@
   transform: translateY(100%) scale(0.8);
   opacity: 0;
   pointer-events: none !important;
+}
+
+/* Landing Page Mode: scaled up and shifted slightly left on desktop/tablet */
+@media (min-width: 769px) {
+  .home-assistant-container.landing-mode:not(.collapsed) {
+    transform: translate(-45px, -20px) scale(1.35);
+  }
+
+  .home-assistant-container.landing-mode.collapsed {
+    transform: translate(-45px, 100%) scale(0.8);
+  }
 }
 
 .home-assistant-canvas-wrapper {
@@ -45,7 +56,7 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 4px 16px rgba(13, 148, 136, 0.5);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   opacity: 0.9;
 }
 
@@ -67,6 +78,14 @@
   right: 20px;
   width: 38px;
   height: 38px;
+}
+
+/* Shift toggle button when in landing mode on desktop */
+@media (min-width: 769px) {
+  .home-assistant-toggle-btn.landing-mode:not(.collapsed) {
+    bottom: 290px;
+    right: 32px;
+  }
 }
 
 .home-assistant-toggle-btn:not(.collapsed):hover {
@@ -500,4 +519,44 @@
     bottom: 530px;      /* Float above the strip */
     right: 16px;
   }
+}
+
+/* ===== Subtitles Toggle Button (CC) ===== */
+.home-assistant-cc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 20px;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: auto;
+}
+
+.home-assistant-cc-btn:hover {
+  transform: scale(1.05);
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.home-assistant-cc-btn.active {
+  background: rgba(13, 148, 136, 0.85); /* teal */
+  border-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+}
+
+.home-assistant-cc-btn svg {
+  width: 14px;
+  height: 14px;
 }

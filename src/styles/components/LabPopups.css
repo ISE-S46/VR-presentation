@@ -1,0 +1,101 @@
+/* ============================
+   LAB IMAGE POPUPS
+   Photos appear as the avatar names each lab and accumulate side-by-side,
+   then fade out together once the last lab has been named.
+   ============================ */
+.lab-popup-row {
+  position: fixed;
+  top: 9%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 120;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  max-width: calc(100vw - 32px);
+  pointer-events: none;
+
+  /* Group fade-out when leaving */
+  transition: opacity 0.48s ease, transform 0.48s ease;
+}
+
+.lab-popup-row.is-leaving {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-10px) scale(0.97);
+}
+
+.lab-popup-card {
+  width: clamp(150px, 21vw, 230px);
+  padding: 9px 9px 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card-hover);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-float);
+  text-align: center;
+
+  /* Each card pops in once when it mounts (i.e. when its lab is named) */
+  animation: lab-card-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  will-change: transform, opacity;
+}
+
+.lab-popup-image-wrap {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.lab-popup-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.lab-popup-label {
+  display: block;
+  margin-top: 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  color: var(--text-heading);
+}
+
+@keyframes lab-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .lab-popup-row {
+    top: 7%;
+    gap: 8px;
+  }
+  .lab-popup-card {
+    width: clamp(108px, 29vw, 150px);
+    padding: 7px 7px 9px;
+  }
+  .lab-popup-label {
+    font-size: 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-popup-card {
+    animation-duration: 0.01ms;
+  }
+  .lab-popup-row {
+    transition-duration: 0.01ms;
+  }
+}

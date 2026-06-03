@@ -136,7 +136,7 @@ function MarqueeRow({ partners, direction = 'left', speed = '35s', highlightedPa
 
 export default function OurPartners() {
   const navigate = useNavigate();
-  const { status, spokenText } = useAvatarStatus();
+  const { status, spokenText, durationMs } = useAvatarStatus();
   const [highlightedPartner, setHighlightedPartner] = useState(null);
 
   useEffect(() => {
@@ -144,8 +144,46 @@ export default function OurPartners() {
       const lowercaseText = spokenText.toLowerCase();
       const L = spokenText.length;
       
-      // Calculate total duration estimation (matching the avatar TTS calculation)
-      const durationMs = Math.max(4500, (L / 11.5) * 1000);
+      const charsPerSecond = 12.8;
+      const estimatedDurationMs = Math.max(4500, (L / charsPerSecond) * 1000);
+      const activeDurationMs = durationMs || estimatedDurationMs;
+
+      // Helper function to calculate weighted timestamp for a character index (accounting for TTS pauses)
+      const getWeightedTime = (targetIdx) => {
+        let virtualLength = 0;
+        let targetVirtualIndex = 0;
+
+        // Calibrated pause weights for 0.97 speed
+        const ellipsisWeight = 12.3;
+        const commaWeight = 3.7;
+        const periodWeight = 7.7;
+
+        for (let i = 0; i < L; i++) {
+          let charWeight = 1;
+          
+          if (spokenText.substr(i, 3) === '...') {
+            charWeight = ellipsisWeight;
+            if (i < targetIdx) {
+              targetVirtualIndex += charWeight;
+            }
+            virtualLength += charWeight;
+            i += 2; // skip the other two dots
+            continue;
+          } else if (spokenText[i] === ',' || spokenText[i] === ';') {
+            charWeight = commaWeight;
+          } else if (spokenText[i] === '.' || spokenText[i] === '!' || spokenText[i] === '?') {
+            charWeight = periodWeight;
+          }
+          
+          if (i < targetIdx) {
+            targetVirtualIndex += charWeight;
+          }
+          virtualLength += charWeight;
+        }
+
+        return (targetVirtualIndex / virtualLength) * activeDurationMs;
+      };
+
       const timeline = [];
 
       // Find all matches in internal centres
@@ -153,9 +191,8 @@ export default function OurPartners() {
         for (const kw of c.keywords) {
           const idx = lowercaseText.indexOf(kw);
           if (idx !== -1) {
-            const startMs = (idx / L) * durationMs;
-            const endMs = Math.min(durationMs, ((idx + kw.length) / L) * durationMs + 2800); // keep highlighted longer for readability
-            timeline.push({ name: c.name, type: 'internal', start: startMs, end: endMs, index: idx });
+            const startMs = getWeightedTime(idx);
+            timeline.push({ name: c.name, type: 'internal', start: startMs, index: idx });
             break; // Match once per centre
           }
         }
@@ -166,9 +203,8 @@ export default function OurPartners() {
         for (const kw of p.keywords) {
           const idx = lowercaseText.indexOf(kw);
           if (idx !== -1) {
-            const startMs = (idx / L) * durationMs;
-            const endMs = Math.min(durationMs, ((idx + kw.length) / L) * durationMs + 2800); // keep highlighted longer for readability
-            timeline.push({ name: p.name, type: 'external', start: startMs, end: endMs, index: idx });
+            const startMs = getWeightedTime(idx);
+            timeline.push({ name: p.name, type: 'external', start: startMs, index: idx });
             break; // Match once per partner
           }
         }
@@ -177,39 +213,44 @@ export default function OurPartners() {
       // Sort timeline events by chronological appearance in spoken text
       timeline.sort((a, b) => a.index - b.index);
 
-      // Adjust start times to guarantee a minimum display duration (e.g. 3200ms) for each focused partner
-      const MIN_GAP_MS = 3200; 
-      let lastStart = -MIN_GAP_MS;
-      
-      const adjustedTimeline = timeline.map((event) => {
-        let start = event.start;
-        if (start - lastStart < MIN_GAP_MS) {
-          start = lastStart + MIN_GAP_MS;
+      // Map timeline to have precise end times based on the next event's start time to prevent visual drifts
+      const adjustedTimeline = timeline.map((event, idx) => {
+        const start = event.start;
+        let end;
+        if (idx < timeline.length - 1) {
+          // End exactly 100ms before the next partner starts
+          end = Math.max(start + 500, timeline[idx + 1].start - 100);
+        } else {
+          // For the last partner, stay highlighted for 2.5 seconds (or up to the end of the duration)
+          end = Math.min(activeDurationMs, start + 2500);
         }
-        lastStart = start;
         return {
           ...event,
           start,
-          end: start + 2800 // Stay active for 2.8 seconds
+          end
         };
       });
 
       const timers = [];
 
-      adjustedTimeline.forEach((event) => {
+      adjustedTimeline.forEach((event, idx) => {
         // Timer to trigger the highlight & scroll
         const startTimer = setTimeout(() => {
           setHighlightedPartner(event.name);
           
-          if (event.type === 'external') {
-            const element = document.querySelector('.external-marquee-wall');
-            if (element) {
-              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-          } else {
-            const element = document.querySelector('.internal-partner-list');
-            if (element) {
-              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Only scroll if the partner type changed or if it's the first highlight to avoid constant scrolling fight
+          const isFirstOfType = idx === 0 || adjustedTimeline[idx - 1].type !== event.type;
+          if (isFirstOfType) {
+            if (event.type === 'external') {
+              const element = document.querySelector('.external-marquee-wall');
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            } else {
+              const element = document.querySelector('.internal-partner-list');
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
             }
           }
         }, event.start);
@@ -226,9 +267,12 @@ export default function OurPartners() {
         timers.forEach(clearTimeout);
       };
     } else {
-      setHighlightedPartner(null);
+      // Clear the highlight on the next frame (deferred so it isn't a
+      // synchronous setState inside the effect body).
+      const clearId = requestAnimationFrame(() => setHighlightedPartner(null));
+      return () => cancelAnimationFrame(clearId);
     }
-  }, [status, spokenText]);
+  }, [status, spokenText, durationMs]);
 
   const hasHighlight = highlightedPartner !== null;
 

@@ -71,7 +71,7 @@ const categories = [
     id: 'DemoProject', 
     number: '3.2', 
     title: 'Demo Project', 
-    desc: 'Experience a featured smart mobility solution in action', 
+    desc: 'Experience a featured serious training simulation in action', 
     theme: 'violet',
     iconComponent: TargetIcon 
   }
