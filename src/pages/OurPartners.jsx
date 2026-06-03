@@ -177,9 +177,26 @@ export default function OurPartners() {
       // Sort timeline events by chronological appearance in spoken text
       timeline.sort((a, b) => a.index - b.index);
 
+      // Adjust start times to guarantee a minimum display duration (e.g. 3200ms) for each focused partner
+      const MIN_GAP_MS = 3200; 
+      let lastStart = -MIN_GAP_MS;
+      
+      const adjustedTimeline = timeline.map((event) => {
+        let start = event.start;
+        if (start - lastStart < MIN_GAP_MS) {
+          start = lastStart + MIN_GAP_MS;
+        }
+        lastStart = start;
+        return {
+          ...event,
+          start,
+          end: start + 2800 // Stay active for 2.8 seconds
+        };
+      });
+
       const timers = [];
 
-      timeline.forEach((event) => {
+      adjustedTimeline.forEach((event) => {
         // Timer to trigger the highlight & scroll
         const startTimer = setTimeout(() => {
           setHighlightedPartner(event.name);
