@@ -3,6 +3,7 @@ import { useAvatarStatus } from '../hooks/useAvatarStatus';
 import aiImg from '../assets/AI.JPG';
 import immersiveImg from '../assets/Immersive.JPG';
 import iotImg from '../assets/IOT.JPG';
+import innovationImg from '../assets/innovation.JPG';
 import '../styles/components/LabPopups.css';
 
 /**
@@ -21,6 +22,7 @@ const LAB_TARGETS = [
   { keyword: 'a.i.', img: aiImg, label: 'A.I. Lab' },
   { keyword: 'immersive', img: immersiveImg, label: 'Immersive Media Lab' },
   { keyword: 'i.o.t.', img: iotImg, label: 'I.O.T. Lab' },
+  { keyword: 'innovation', img: innovationImg, label: 'Innovation Space' },
 ];
 
 const DISMISS_KEYWORD = 'innovation'; // the last lab named in the script

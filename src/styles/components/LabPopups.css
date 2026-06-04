@@ -80,14 +80,16 @@
 @media (max-width: 600px) {
   .lab-popup-row {
     top: 7%;
-    gap: 8px;
+    gap: 6px;
+    max-width: calc(100vw - 16px);
   }
   .lab-popup-card {
-    width: clamp(108px, 29vw, 150px);
-    padding: 7px 7px 9px;
+    width: clamp(76px, 22vw, 110px);
+    padding: 6px 6px 8px;
   }
   .lab-popup-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+    margin-top: 4px;
   }
 }
 
