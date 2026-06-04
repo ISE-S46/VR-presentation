@@ -43,7 +43,7 @@ const govHealthcarePartners = [
 ];
 
 const techCommunityPartners = [
-  { name: 'AWS', logo: '/logos/aws.png', keywords: ['aws', 'amazon web services'] },
+  { name: 'AWS', logo: '/logos/aws.png', keywords: ['a.w.s.', 'a.w.s', 'aws', 'amazon web services', 'amazon', 'a w s'] },
   { name: 'SBS Transit', logo: '/logos/sbs.png', keywords: ['sbs transit', 'sbs'] },
   { name: 'Certis', logo: '/logos/certis.png', keywords: ['certis'] },
   { name: 'Metabots', logo: '/logos/metabots.png', keywords: ['metabots'] },
@@ -218,8 +218,11 @@ export default function OurPartners() {
         const start = event.start;
         let end;
         if (idx < timeline.length - 1) {
-          // End exactly 100ms before the next partner starts
-          end = Math.max(start + 500, timeline[idx + 1].start - 100);
+          // End just AFTER the next partner starts so the handoff is seamless:
+          // by then the next highlight has taken over, so this clear is a no-op
+          // (guarded below). That keeps the marquee frozen and the spotlight from
+          // flickering between partners.
+          end = Math.max(start + 500, timeline[idx + 1].start + 60);
         } else {
           // For the last partner, stay highlighted for 2.5 seconds (or up to the end of the duration)
           end = Math.min(activeDurationMs, start + 2500);
@@ -276,9 +279,64 @@ export default function OurPartners() {
 
   const hasHighlight = highlightedPartner !== null;
 
+  // Partners live in scrolling marquees or may be scrolled past, so a frozen
+  // highlight can end up off-screen. Mirror the currently-named partner in a
+  // fixed, centred "spotlight" card so it's always clearly visible.
+  const spotlightPartner = (() => {
+    if (!highlightedPartner) return null;
+
+    // Check external partners first (they have logos)
+    const ext = [...govHealthcarePartners, ...techCommunityPartners].find((p) => p.name === highlightedPartner);
+    if (ext) return ext;
+
+    // Fall back to internal centres — synthesise a card with the first-letter fallback
+    const intl = internalCentres.find((c) => c.name === highlightedPartner);
+    if (intl) return { name: intl.name, logo: null, _accent: intl.color };
+
+    return null;
+  })();
+
   return (
     <div className={`page-container partners-page animate-fade-in ${hasHighlight ? 'has-highlight' : ''}`}>
       <BackButton onClick={() => navigate('/Home')} />
+
+      {spotlightPartner && (
+        <div
+          className="partner-spotlight"
+          key={spotlightPartner.name}
+          aria-hidden="true"
+          style={spotlightPartner._accent ? { '--spotlight-accent': spotlightPartner._accent } : undefined}
+        >
+          <span className="partner-spotlight-eyebrow">
+            {spotlightPartner._accent ? 'Internal Centre' : 'ETC Partner'}
+          </span>
+          <div className="partner-spotlight-logo-wrap">
+            {spotlightPartner.logo ? (
+              <img
+                src={spotlightPartner.logo}
+                alt={spotlightPartner.name}
+                className="partner-spotlight-logo"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  const fb = e.target.nextSibling;
+                  if (fb) fb.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <span
+              className="partner-spotlight-fallback"
+              style={{
+                display: spotlightPartner.logo ? 'none' : 'flex',
+                background: spotlightPartner._accent ? `${spotlightPartner._accent}18` : undefined,
+                color: spotlightPartner._accent || undefined,
+              }}
+            >
+              {spotlightPartner.name.charAt(0)}
+            </span>
+          </div>
+          <span className="partner-spotlight-name">{spotlightPartner.name}</span>
+        </div>
+      )}
 
       <div className="page-header">
         <span className="section-label">Ecosystem</span>
