@@ -829,6 +829,15 @@ export default function HomeAssistant() {
 
           {!activeProject && aiResponseText && !isThinking && (!isSpeaking || showSubtitles) && (
             <div className="home-assistant-bubble ai-bubble">
+              <button
+                type="button"
+                className="home-assistant-bubble-close"
+                onClick={() => setAiResponseText("")}
+                title="Hide response text"
+                aria-label="Hide response text"
+              >
+                &times;
+              </button>
               {aiResponseText}
             </div>
           )}
