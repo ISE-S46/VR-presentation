@@ -95,8 +95,18 @@ function AvatarCanvas({
   }, [audioURL, button, cameraPosition, modelPath, modelPosition, modelScale, proxiedTtsEndpoint]);
 
   useEffect(() => {
-    if (controller && script) {
-      controller.speak(script);
+    if (controller) {
+      if (script) {
+        controller.speak(script);
+      } else {
+        try {
+          controller.audioManager?.cleanup();
+          controller.lipSync?.stop();
+          controller.animCtrl?.switchAction("Idle");
+        } catch (e) {
+          console.error("Error cleaning up avatar speech:", e);
+        }
+      }
     }
   }, [controller, script]);
 

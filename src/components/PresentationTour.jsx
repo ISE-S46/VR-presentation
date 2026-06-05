@@ -100,12 +100,14 @@ export default function PresentationTour() {
   const [active, setActive] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [ambientOn, setAmbientOn] = useState(true);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   // Imperative mirrors so timers / listeners always read fresh values.
   const activeRef = useRef(false);
   const stepRef = useRef(0);
   const phaseRef = useRef('idle'); // 'idle' | 'speak-pending' | 'speaking' | 'pausing'
   const timers = useRef({ nav: null, watchdog: null, advance: null });
+  const dropdownRef = useRef(null);
 
   // Stable handles so the mutually-recursive engine functions can call each
   // other without re-subscribing the broadcast listener on every render.
@@ -131,6 +133,7 @@ export default function PresentationTour() {
       window.__etcTourActive = false;
       window.dispatchEvent(new CustomEvent('presentation-tour-state', { detail: { active: false } }));
       setActive(false);
+      setShowDropdown(false);
 
       if (options.returnHome) {
         window.setTimeout(() => navigate('/Home'), 120);
@@ -190,11 +193,36 @@ export default function PresentationTour() {
     runStepRef.current(next);
   }, [clearTimers]);
 
+  const handlePrev = useCallback(() => {
+    if (stepIndex > 0) {
+      runStep(stepIndex - 1);
+    }
+  }, [stepIndex, runStep]);
+
+  const handleNext = useCallback(() => {
+    if (stepIndex < TOUR_STEPS.length - 1) {
+      runStep(stepIndex + 1);
+    }
+  }, [stepIndex, runStep]);
+
   useEffect(() => {
     runStepRef.current = runStep;
     advanceRef.current = advance;
     stopRef.current = stop;
   }, [runStep, advance, stop]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const clickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+    if (showDropdown) {
+      document.addEventListener('mousedown', clickOutside);
+    }
+    return () => document.removeEventListener('mousedown', clickOutside);
+  }, [showDropdown]);
 
   // Drive auto-advance off the avatar's real speaking lifecycle.
   useEffect(() => {
@@ -283,16 +311,84 @@ export default function PresentationTour() {
 
       <div className="tour-control-bar" role="status" aria-live="polite">
         <span className="tour-live-dot" aria-hidden="true" />
-        <div className="tour-control-text">
-          <span className="tour-control-label">Now Presenting</span>
-          <span className="tour-control-step">
-            {stepIndex + 1} / {total} &middot; {current.title}
-          </span>
+        
+        {/* Step Selector Dropdown */}
+        <div className="tour-selector-container" ref={dropdownRef}>
+          <button
+            type="button"
+            className={`tour-control-selector ${showDropdown ? 'active' : ''}`}
+            onClick={() => setShowDropdown((val) => !val)}
+            aria-label="Choose presentation step"
+            aria-haspopup="listbox"
+            aria-expanded={showDropdown}
+          >
+            <div className="tour-control-text">
+              <span className="tour-control-label">
+                Now Presenting
+                <svg className="tour-caret-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </span>
+              <span className="tour-control-step">
+                {stepIndex + 1} / {total} &middot; {current.title}
+              </span>
+            </div>
+          </button>
+
+          {showDropdown && (
+            <div className="tour-steps-dropdown" role="listbox">
+              {TOUR_STEPS.map((step, idx) => (
+                <button
+                  key={step.route}
+                  type="button"
+                  role="option"
+                  aria-selected={idx === stepIndex}
+                  className={`tour-dropdown-item ${idx === stepIndex ? 'active' : ''}`}
+                  onClick={() => {
+                    runStep(idx);
+                    setShowDropdown(false);
+                  }}
+                >
+                  <span className="step-num">{idx + 1}</span>
+                  <span className="step-title">{step.title}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
+        {/* Previous Button */}
+        <button
+          type="button"
+          className="tour-nav-btn tour-prev-btn"
+          onClick={handlePrev}
+          disabled={stepIndex === 0}
+          aria-label="Previous step"
+          title="Previous Step"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </button>
+
+        {/* Progress Track */}
         <div className="tour-progress-track" aria-hidden="true">
           <div className="tour-progress-fill" style={{ width: `${progressPct}%` }} />
         </div>
+
+        {/* Next Button */}
+        <button
+          type="button"
+          className="tour-nav-btn tour-next-btn"
+          onClick={handleNext}
+          disabled={stepIndex === total - 1}
+          aria-label="Next step"
+          title="Next Step"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
 
         <button
           type="button"

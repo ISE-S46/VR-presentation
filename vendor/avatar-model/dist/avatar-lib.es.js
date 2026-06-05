@@ -2521,6 +2521,10 @@ var Cn = class {
 		}
 	}
 	cleanup() {
+		if (this.loadingAudio) {
+			try { this.loadingAudio.pause(); } catch(err) {}
+			this.loadingAudio = null;
+		}
 		this.audio &&= (this.listeners &&= (this.audio.removeEventListener("playing", this.listeners.playing), this.audio.removeEventListener("ended", this.listeners.ended), null), this.audio.pause(), null), this.audioUrl &&= (URL.revokeObjectURL(this.audioUrl), null);
 	}
 	dispose() {
@@ -2554,14 +2558,30 @@ var Cn = class {
 	}
 	async playWithTextSync(e, t, n) {
 		let r = new Audio(e);
-		r.preload = "auto", this.audioCtx?.state === "suspended" && await this.audioCtx.resume(), await new Promise((e) => {
-			let t = !1, n = null, i = () => {
-				t || (t = !0, n !== null && (clearTimeout(n), n = null), e());
-			};
-			r.addEventListener("canplaythrough", i, { once: !0 }), r.addEventListener("loadedmetadata", () => {
-				n = setTimeout(i, 3e3);
-			}, { once: !0 }), r.load();
-		});
+		this.loadingAudio = r;
+		r.preload = "auto", this.audioCtx?.state === "suspended" && await this.audioCtx.resume();
+		try {
+			await new Promise((e, reject) => {
+				let t = !1, n = null, i = () => {
+					if (this.loadingAudio !== r) {
+						reject(new Error("Audio load aborted"));
+						return;
+					}
+					t || (t = !0, n !== null && (clearTimeout(n), n = null), e());
+				};
+				r.addEventListener("canplaythrough", i, { once: !0 }), r.addEventListener("loadedmetadata", () => {
+					n = setTimeout(i, 3e3);
+				}, { once: !0 }), r.load();
+			});
+		} catch (err) {
+			n();
+			return;
+		}
+		if (this.loadingAudio !== r) {
+			n();
+			return;
+		}
+		this.loadingAudio = null;
 		let i = isFinite(r.duration) && r.duration > 0 ? r.duration * 1e3 : null, a = () => {
 			let e = r.currentTime * 1e3, n = performance.now() - e;
 			this.playStartTime = n, this.lipSync.startAt(n, t, i);

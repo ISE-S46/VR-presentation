@@ -161,7 +161,8 @@ export default function HomeAssistant() {
     updateActiveProject(null);
     setIsSpeaking(false);
     setShowSubtitles(false);
-  }, [broadcastAvatarStatus, clearSpeakTimer, updateActiveProject]);
+    setLatestScript("");
+  }, [broadcastAvatarStatus, clearSpeakTimer, updateActiveProject, setLatestScript]);
 
   const revealAssistantResponse = useCallback((text, navTarget = pendingNavRef.current) => {
     clearRevealFallback();
