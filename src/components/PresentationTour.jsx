@@ -342,140 +342,144 @@ export default function PresentationTour() {
       <div className={`tour-cinema-vignette ${ambientOn ? 'is-ambient' : ''}`} aria-hidden="true" />
 
       <div className="tour-control-bar" role="status" aria-live="polite">
-        <span className="tour-live-dot" aria-hidden="true" />
-        
-        {/* Step Selector Dropdown */}
-        <div className="tour-selector-container" ref={dropdownRef}>
-          <button
-            type="button"
-            className={`tour-control-selector ${showDropdown ? 'active' : ''}`}
-            onClick={() => setShowDropdown((val) => !val)}
-            aria-label="Choose presentation step"
-            aria-haspopup="listbox"
-            aria-expanded={showDropdown}
-          >
-            <div className="tour-control-text">
-              <span className="tour-control-label">
-                Now Presenting
-                <svg className="tour-caret-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </span>
-              <span className="tour-control-step">
-                {stepIndex + 1} / {total} &middot; {current.title}
-              </span>
-            </div>
-          </button>
-
-          {showDropdown && (
-            <div className="tour-steps-dropdown" role="listbox">
-              {TOUR_STEPS.map((step, idx) => (
-                <button
-                  key={step.route}
-                  type="button"
-                  role="option"
-                  aria-selected={idx === stepIndex}
-                  className={`tour-dropdown-item ${idx === stepIndex ? 'active' : ''}`}
-                  onClick={() => {
-                    runStep(idx);
-                    setShowDropdown(false);
-                  }}
-                >
-                  <span className="step-num">{idx + 1}</span>
-                  <span className="step-title">{step.title}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Previous Button */}
-        <button
-          type="button"
-          className="tour-nav-btn tour-prev-btn"
-          onClick={handlePrev}
-          disabled={stepIndex === 0}
-          aria-label="Previous step"
-          title="Previous Step"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-        </button>
-
-        {/* Progress Track */}
+        {/* Progress Track at the top edge */}
         <div className="tour-progress-track" aria-hidden="true">
           <div className="tour-progress-fill" style={{ width: `${progressPct}%` }} />
         </div>
 
-        {/* Next Button */}
-        <button
-          type="button"
-          className="tour-nav-btn tour-next-btn"
-          onClick={handleNext}
-          disabled={stepIndex === total - 1}
-          aria-label="Next step"
-          title="Next Step"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </button>
+        {/* Left Section: Live Dot & Step Dropdown */}
+        <div className="tour-control-section tour-control-section--left">
+          <span className="tour-live-dot" aria-hidden="true" />
+          
+          <div className="tour-selector-container" ref={dropdownRef}>
+            <button
+              type="button"
+              className={`tour-control-selector ${showDropdown ? 'active' : ''}`}
+              onClick={() => setShowDropdown((val) => !val)}
+              aria-label="Choose presentation step"
+              aria-haspopup="listbox"
+              aria-expanded={showDropdown}
+            >
+              <div className="tour-control-text">
+                <span className="tour-control-label">
+                  Now Presenting
+                  <svg className="tour-caret-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </span>
+                <span className="tour-control-step">
+                  {stepIndex + 1} / {total} &middot; {current.title}
+                </span>
+              </div>
+            </button>
 
-        <button
-          type="button"
-          className={`tour-ambient-btn ${ambientOn ? 'active' : ''}`}
-          onClick={() => setAmbientOn((value) => !value)}
-          aria-label={ambientOn ? 'Turn ambient visual off' : 'Turn ambient visual on'}
-          aria-pressed={ambientOn}
-          title={ambientOn ? 'Ambient visual on' : 'Ambient visual off'}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M12 3v18"></path>
-            <path d="M5 8v8"></path>
-            <path d="M19 8v8"></path>
-            <path d="M8.5 5.5v13"></path>
-            <path d="M15.5 5.5v13"></path>
-          </svg>
-        </button>
+            {showDropdown && (
+              <div className="tour-steps-dropdown" role="listbox">
+                {TOUR_STEPS.map((step, idx) => (
+                  <button
+                    key={step.route}
+                    type="button"
+                    role="option"
+                    aria-selected={idx === stepIndex}
+                    className={`tour-dropdown-item ${idx === stepIndex ? 'active' : ''}`}
+                    onClick={() => {
+                      runStep(idx);
+                      setShowDropdown(false);
+                    }}
+                  >
+                    <span className="step-num">{idx + 1}</span>
+                    <span className="step-title">{step.title}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
 
-        {/* Pause / Continue Button */}
-        <button
-          type="button"
-          className={`tour-pause-btn ${isPaused ? 'paused' : ''}`}
-          onClick={isPaused ? resume : pause}
-          aria-label={isPaused ? 'Continue presentation' : 'Pause presentation'}
-          title={isPaused ? 'Continue Presentation' : 'Pause Presentation'}
-        >
-          {isPaused ? (
-            <>
+        {/* Center Section: Playback navigation controls */}
+        <div className="tour-control-section tour-control-section--center">
+          {/* Previous Button */}
+          <button
+            type="button"
+            className="tour-nav-btn tour-prev-btn"
+            onClick={handlePrev}
+            disabled={stepIndex === 0}
+            aria-label="Previous step"
+            title="Previous Step"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+
+          {/* Pause / Continue Button */}
+          <button
+            type="button"
+            className={`tour-pause-btn ${isPaused ? 'paused' : ''}`}
+            onClick={isPaused ? resume : pause}
+            aria-label={isPaused ? 'Continue presentation' : 'Pause presentation'}
+            title={isPaused ? 'Continue Presentation' : 'Pause Presentation'}
+          >
+            {isPaused ? (
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <polygon points="6 4 20 12 6 20 6 4" />
               </svg>
-              <span>Continue</span>
-            </>
-          ) : (
-            <>
+            ) : (
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <rect x="5" y="4" width="4" height="16" rx="1" />
                 <rect x="15" y="4" width="4" height="16" rx="1" />
               </svg>
-              <span>Pause</span>
-            </>
-          )}
-        </button>
+            )}
+          </button>
 
-        <button
-          type="button"
-          className="tour-stop-btn"
-          onClick={stop}
-          aria-label="Stop the presentation"
-        >
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <rect x="6" y="6" width="12" height="12" rx="2" />
-          </svg>
-          <span>Stop</span>
-        </button>
+          {/* Next Button */}
+          <button
+            type="button"
+            className="tour-nav-btn tour-next-btn"
+            onClick={handleNext}
+            disabled={stepIndex === total - 1}
+            aria-label="Next step"
+            title="Next Step"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Right Section: Utility controls */}
+        <div className="tour-control-section tour-control-section--right">
+          {/* Ambient Toggle Button */}
+          <button
+            type="button"
+            className={`tour-ambient-btn ${ambientOn ? 'active' : ''}`}
+            onClick={() => setAmbientOn((value) => !value)}
+            aria-label={ambientOn ? 'Turn ambient visual off' : 'Turn ambient visual on'}
+            aria-pressed={ambientOn}
+            title={ambientOn ? 'Ambient visual on' : 'Ambient visual off'}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 3v18"></path>
+              <path d="M5 8v8"></path>
+              <path d="M19 8v8"></path>
+              <path d="M8.5 5.5v13"></path>
+              <path d="M15.5 5.5v13"></path>
+            </svg>
+          </button>
+
+          {/* Stop Button */}
+          <button
+            type="button"
+            className="tour-stop-btn"
+            onClick={stop}
+            aria-label="Stop the presentation"
+            title="Stop Presentation"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <rect x="6" y="6" width="12" height="12" rx="2" />
+            </svg>
+          </button>
+        </div>
       </div>
     </>
   );
