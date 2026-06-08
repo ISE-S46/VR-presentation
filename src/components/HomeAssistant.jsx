@@ -888,21 +888,41 @@ export default function HomeAssistant() {
               </div>
 
               {isSpeaking && (
-                <button
-                  type="button"
-                  className={`home-assistant-cc-btn ${showSubtitles ? 'active' : ''}`}
-                  onClick={() => setShowSubtitles(!showSubtitles)}
-                  title={showSubtitles ? "Hide Subtitles" : "Show Subtitles"}
-                  aria-label={showSubtitles ? "Hide Subtitles" : "Show Subtitles"}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                    <line x1="7" y1="15" x2="11" y2="15" />
-                    <line x1="13" y1="15" x2="17" y2="15" />
-                    <line x1="7" y1="11" x2="17" y2="11" />
-                  </svg>
-                  <span>{showSubtitles ? "Hide Text" : "Show Text"}</span>
-                </button>
+                <>
+                  <button
+                    type="button"
+                    className={`home-assistant-cc-btn ${showSubtitles ? 'active' : ''}`}
+                    onClick={() => setShowSubtitles(!showSubtitles)}
+                    title={showSubtitles ? "Hide Subtitles" : "Show Subtitles"}
+                    aria-label={showSubtitles ? "Hide Subtitles" : "Show Subtitles"}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                      <line x1="7" y1="15" x2="11" y2="15" />
+                      <line x1="13" y1="15" x2="17" y2="15" />
+                      <line x1="7" y1="11" x2="17" y2="11" />
+                    </svg>
+                    <span>{showSubtitles ? "Hide Text" : "Show Text"}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="home-assistant-cc-btn home-assistant-cc-btn--stop"
+                    onClick={() => {
+                      resetAvatarState();
+                      setAiResponseText("");
+                    }}
+                    title="Stop Speaking"
+                    aria-label="Stop Speaking"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                      <line x1="23" y1="9" x2="17" y2="15" />
+                      <line x1="17" y1="9" x2="23" y2="15" />
+                    </svg>
+                    <span>Stop Voice</span>
+                  </button>
+                </>
               )}
             </div>
           )}

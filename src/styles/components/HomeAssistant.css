@@ -589,3 +589,10 @@
   width: 14px;
   height: 14px;
 }
+
+.home-assistant-cc-btn--stop:hover {
+  background: rgba(220, 38, 38, 0.85); /* red */
+  border-color: rgba(255, 255, 255, 0.25);
+  color: white;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+}
