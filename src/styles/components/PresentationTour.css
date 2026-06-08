@@ -426,12 +426,14 @@
 }
 
 .tour-ambient-btn:hover,
-.tour-stop-btn:hover {
+.tour-stop-btn:hover,
+.tour-pause-btn:hover {
   transform: translateY(-1px);
 }
 
 .tour-ambient-btn svg,
-.tour-stop-btn svg {
+.tour-stop-btn svg,
+.tour-pause-btn svg {
   width: 15px;
   height: 15px;
 }
@@ -447,6 +449,38 @@
 
 .tour-stop-btn:hover {
   background: rgba(220, 38, 38, 0.18);
+}
+
+.tour-pause-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0 0.9rem;
+  height: 38px;
+  border-radius: var(--radius-pill);
+  color: #0d9488;
+  background: rgba(13, 148, 136, 0.1);
+  border: 1px solid rgba(13, 148, 136, 0.15);
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.tour-pause-btn:hover {
+  background: rgba(13, 148, 136, 0.18);
+}
+
+.tour-pause-btn.paused {
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.09);
+  border-color: rgba(37, 99, 235, 0.2);
+}
+
+.tour-pause-btn.paused:hover {
+  background: rgba(37, 99, 235, 0.16);
 }
 
 body.presentation-mode .live-clock-container,
@@ -600,6 +634,7 @@ body.presentation-mode .page-transition {
   }
 
   .tour-stop-btn span,
+  .tour-pause-btn span,
   .tour-start-copy small {
     display: none;
   }

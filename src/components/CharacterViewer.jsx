@@ -110,6 +110,40 @@ function AvatarCanvas({
     }
   }, [controller, script]);
 
+  useEffect(() => {
+    const handlePause = () => {
+      if (controller && controller.audioManager?.audio) {
+        try {
+          controller.audioManager.audio.pause();
+          controller.animCtrl?.switchAction("Idle");
+        } catch (e) {
+          console.error("Error pausing avatar playback:", e);
+        }
+      }
+    };
+
+    const handleResume = () => {
+      if (controller && controller.audioManager?.audio) {
+        try {
+          if (!controller.audioManager.audio.ended) {
+            controller.animCtrl?.switchAction("Talk");
+          }
+          controller.audioManager.audio.play();
+          controller.audioManager.forceResync();
+        } catch (e) {
+          console.error("Error resuming avatar playback:", e);
+        }
+      }
+    };
+
+    window.addEventListener('avatar-pause-playback', handlePause);
+    window.addEventListener('avatar-resume-playback', handleResume);
+    return () => {
+      window.removeEventListener('avatar-pause-playback', handlePause);
+      window.removeEventListener('avatar-resume-playback', handleResume);
+    };
+  }, [controller]);
+
   return (
     <>
       <canvas ref={canvasRef} className="avatar-canvas" aria-label={section} />

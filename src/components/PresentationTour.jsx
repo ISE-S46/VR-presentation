@@ -101,6 +101,7 @@ export default function PresentationTour() {
   const [stepIndex, setStepIndex] = useState(0);
   const [ambientOn, setAmbientOn] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Imperative mirrors so timers / listeners always read fresh values.
   const activeRef = useRef(false);
@@ -108,6 +109,7 @@ export default function PresentationTour() {
   const phaseRef = useRef('idle'); // 'idle' | 'speak-pending' | 'speaking' | 'pausing'
   const timers = useRef({ nav: null, watchdog: null, advance: null });
   const dropdownRef = useRef(null);
+  const isPausedRef = useRef(false);
 
   // Stable handles so the mutually-recursive engine functions can call each
   // other without re-subscribing the broadcast listener on every render.
@@ -129,6 +131,8 @@ export default function PresentationTour() {
     (options = {}) => {
       activeRef.current = false;
       phaseRef.current = 'idle';
+      isPausedRef.current = false;
+      setIsPaused(false);
       clearTimers();
       window.__etcTourActive = false;
       window.dispatchEvent(new CustomEvent('presentation-tour-state', { detail: { active: false } }));
@@ -145,6 +149,8 @@ export default function PresentationTour() {
   const runStep = useCallback(
     (i) => {
       clearTimers();
+      isPausedRef.current = false;
+      setIsPaused(false);
       stepRef.current = i;
       setStepIndex(i);
       phaseRef.current = 'speak-pending';
@@ -205,6 +211,30 @@ export default function PresentationTour() {
     }
   }, [stepIndex, runStep]);
 
+  const pause = useCallback(() => {
+    if (!activeRef.current || isPausedRef.current) return;
+    isPausedRef.current = true;
+    setIsPaused(true);
+    clearTimers();
+    window.dispatchEvent(new CustomEvent('avatar-pause-playback'));
+  }, [clearTimers]);
+
+  const resume = useCallback(() => {
+    if (!activeRef.current || !isPausedRef.current) return;
+    isPausedRef.current = false;
+    setIsPaused(false);
+    window.dispatchEvent(new CustomEvent('avatar-resume-playback'));
+
+    if (phaseRef.current === 'speak-pending') {
+      runStepRef.current(stepRef.current);
+    } else if (phaseRef.current === 'speaking') {
+      const remainingMs = estimateMs(TOUR_STEPS[stepRef.current].script) + WATCHDOG_BUFFER;
+      timers.current.watchdog = setTimeout(() => advanceRef.current(), remainingMs);
+    } else if (phaseRef.current === 'pausing') {
+      timers.current.advance = setTimeout(() => advanceRef.current(), STEP_PAUSE);
+    }
+  }, []);
+
   useEffect(() => {
     runStepRef.current = runStep;
     advanceRef.current = advance;
@@ -227,7 +257,7 @@ export default function PresentationTour() {
   // Drive auto-advance off the avatar's real speaking lifecycle.
   useEffect(() => {
     const onBroadcast = (e) => {
-      if (!activeRef.current) return;
+      if (!activeRef.current || isPausedRef.current) return;
       const status = e.detail?.status;
 
       if (phaseRef.current === 'speak-pending' && status === 'speaking') {
@@ -266,6 +296,8 @@ export default function PresentationTour() {
     activeRef.current = true;
     phaseRef.current = 'idle';
     stepRef.current = 0;
+    isPausedRef.current = false;
+    setIsPaused(false);
     window.__etcTourActive = true;
     window.dispatchEvent(
       new CustomEvent('presentation-tour-state', {
@@ -405,6 +437,32 @@ export default function PresentationTour() {
             <path d="M8.5 5.5v13"></path>
             <path d="M15.5 5.5v13"></path>
           </svg>
+        </button>
+
+        {/* Pause / Continue Button */}
+        <button
+          type="button"
+          className={`tour-pause-btn ${isPaused ? 'paused' : ''}`}
+          onClick={isPaused ? resume : pause}
+          aria-label={isPaused ? 'Continue presentation' : 'Pause presentation'}
+          title={isPaused ? 'Continue Presentation' : 'Pause Presentation'}
+        >
+          {isPaused ? (
+            <>
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <polygon points="6 4 20 12 6 20 6 4" />
+              </svg>
+              <span>Continue</span>
+            </>
+          ) : (
+            <>
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <rect x="5" y="4" width="4" height="16" rx="1" />
+                <rect x="15" y="4" width="4" height="16" rx="1" />
+              </svg>
+              <span>Pause</span>
+            </>
+          )}
         </button>
 
         <button

@@ -155,6 +155,45 @@ export default function HomeAssistant() {
     window.dispatchEvent(new CustomEvent('avatar-status-broadcast', { detail }));
   }, []);
 
+  const speechStartRef = useRef(0);
+  const speechRemainingRef = useRef(0);
+  const speechDurationRef = useRef(0);
+
+  const runSpeakTimeout = useCallback((timeMs) => {
+    clearSpeakTimer();
+    speechStartRef.current = Date.now();
+    speechDurationRef.current = timeMs;
+    speakTimeoutRef.current = setTimeout(() => {
+      broadcastAvatarStatus({ projectName: null, status: 'idle' });
+      updateActiveProject(null);
+      speakTimeoutRef.current = null;
+      setIsSpeaking(false);
+    }, timeMs);
+  }, [clearSpeakTimer, broadcastAvatarStatus, updateActiveProject, setIsSpeaking]);
+
+  useEffect(() => {
+    const handlePause = () => {
+      if (speakTimeoutRef.current) {
+        const elapsed = Date.now() - speechStartRef.current;
+        speechRemainingRef.current = Math.max(0, speechDurationRef.current - elapsed);
+        clearSpeakTimer();
+      }
+    };
+
+    const handleResume = () => {
+      if (speechRemainingRef.current > 0) {
+        runSpeakTimeout(speechRemainingRef.current);
+      }
+    };
+
+    window.addEventListener('avatar-pause-playback', handlePause);
+    window.addEventListener('avatar-resume-playback', handleResume);
+    return () => {
+      window.removeEventListener('avatar-pause-playback', handlePause);
+      window.removeEventListener('avatar-resume-playback', handleResume);
+    };
+  }, [clearSpeakTimer, runSpeakTimeout]);
+
   const resetAvatarState = useCallback(() => {
     clearSpeakTimer();
     broadcastAvatarStatus({ projectName: null, status: 'idle' });
@@ -288,16 +327,6 @@ export default function HomeAssistant() {
       setIsSpeaking(true);
       setShowSubtitles(false);
 
-      const runSpeakTimeout = (timeMs) => {
-        clearSpeakTimer();
-        speakTimeoutRef.current = setTimeout(() => {
-          broadcastAvatarStatus({ projectName: null, status: 'idle' });
-          updateActiveProject(null);
-          speakTimeoutRef.current = null;
-          setIsSpeaking(false);
-        }, timeMs);
-      };
-
       runSpeakTimeout(durationMs);
 
       // Read the exact duration from the audio metadata for precise timing
@@ -339,7 +368,7 @@ export default function HomeAssistant() {
       resetAvatarState();
       throw err;
     }
-  }, [broadcastAvatarStatus, clearSpeakTimer, fetchTtsAudio, resetAvatarState, revealAssistantResponse, showNotice, updateActiveProject]);
+  }, [broadcastAvatarStatus, clearSpeakTimer, fetchTtsAudio, resetAvatarState, revealAssistantResponse, showNotice, runSpeakTimeout]);
 
   const sendMessage = useCallback(async (userMessage, showUserBubble = true) => {
     const cleanMessage = userMessage.trim();
