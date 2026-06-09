@@ -782,3 +782,126 @@ body.presentation-mode .page-transition {
     animation: none;
   }
 }
+
+/* ============================
+   CLOSING SCENE
+   Full-screen sign-off shown after the demo, while the avatar says goodbye.
+   ============================ */
+.tour-closing {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 12vh;
+  text-align: center;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  pointer-events: none;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  animation: tour-closing-life var(--closing-duration, 14500ms) ease forwards;
+}
+
+@keyframes tour-closing-life {
+  0% { opacity: 0; }
+  6% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.tour-closing-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  animation: tour-closing-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+}
+
+@keyframes tour-closing-rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tour-closing-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-teal, #0d9488);
+}
+
+.tour-closing-title {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2.2rem, 6vw, 3.8rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #0f172a 20%, #1e293b 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #0f172a;
+}
+
+.tour-closing-sub {
+  margin: 0;
+  color: #475569;
+  font-size: clamp(0.95rem, 2.4vw, 1.25rem);
+  font-weight: 600;
+}
+
+/* ============================
+   AVATAR CLOSING SCENE POSITIONING
+   ============================ */
+
+/* Center and scale the avatar standing in the middle of the screen when closing */
+body.presentation-closing .home-assistant-container:not(.collapsed) {
+  left: 50% !important;
+  right: auto !important;
+  bottom: clamp(-96px, -7vh, -56px) !important;
+  top: auto !important;
+  width: min(560px, 42vw) !important;
+  height: min(760px, calc(100vh + 72px)) !important;
+  min-width: unset !important;
+  transform: translateX(-50%) scale(1.04) !important;
+  transform-origin: bottom center !important;
+  z-index: 9400 !important;
+}
+
+body.presentation-closing .avatar-canvas {
+  /* The model renders slightly right of the canvas centre; nudge it left so it
+     sits in the true middle of the screen. Tune this % if it's still off. */
+  transform: translate(-4%, clamp(14px, 2.2vh, 32px)) scale(1.02) !important;
+  transform-origin: bottom center !important;
+}
+
+/* Hide background pseudo-glow or spotlights so the white page looks clean */
+body.presentation-closing .home-assistant-container:not(.collapsed)::before,
+body.presentation-closing .home-assistant-container:not(.collapsed)::after {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  body.presentation-closing .home-assistant-container:not(.collapsed) {
+    width: min(430px, 100vw) !important;
+    height: 68vh !important;
+    bottom: -34px !important;
+    transform: translateX(-50%) scale(1) !important;
+  }
+
+  body.presentation-closing .avatar-canvas {
+    transform: translate(0, 18px) scale(1) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-closing-inner {
+    animation: none;
+  }
+}

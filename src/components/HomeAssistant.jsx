@@ -37,6 +37,7 @@ When asked to describe, summarize, or list our projects, refer to these 8 projec
 7. When describing, listing, or mentioning our partners (e.g. AWS, SkillsFuture SG, MOE, Certis, SBS Transit, TTSH, CGH, JMA Research, Metabots, Kite Sense, etc.), you MUST introduce them slowly. Add three dots/ellipses ("...") before and after each partner's name. This creates critical speech pauses in Text-to-Speech audio so visitors can view each partner's highlighted card clearly.
    Example: "Our ecosystem includes partners like... Ministry of Education... SkillsFuture SG... Tan Tock Seng Hospital... Changi General Hospital... AWS... SBS Transit... Certis... Metabots... Kite Sense... and JMA Research."
 8. CRITICAL SPELLING RULE: Always spell partner names EXACTLY as listed above. Write "AWS" (three uppercase letters, no dots, no spaces). Never write "A.W.S." or "A W S" or "Amazon Web Services". Write "MOE" not "M.O.E.", "CGH" not "C.G.H.", "TTSH" not "T.T.S.H.", "SBS" not "S.B.S.", "SSG" not "S.S.G.". This ensures the UI can detect and highlight the correct partner card.
+9. If the user asks to see, visit, summarize, or learn about Partners or the Ecosystem page, keep your answer brief and do NOT list individual partner names in that response. Say that you will bring them to the Partners page and walk through the ecosystem there, then append [NAV_/OurPartners]. The Partners page has its own detailed narration that lists and highlights the partner names after the page scrolls.
 
 ## PROJECT INQUIRY ROUTING RULE (CRITICAL):
 1. If the user asks generally to "explain projects", "tell me about projects", "show me projects", "list projects", or similar:
@@ -80,7 +81,7 @@ const QUICK_PROMPTS = [
   },
   {
     label: 'Partners',
-    prompt: 'Summarize ETC partners and bring me to the partners page.',
+    prompt: 'Bring me to the partners page and walk me through the ecosystem there.',
   },
   {
     label: 'Contact',
@@ -91,6 +92,12 @@ const QUICK_PROMPTS = [
     prompt: 'Introduce the Patient Safety VR Training featured demo and bring me to that page.',
   },
 ];
+
+const PARTNERS_PAGE_SCRIPT =
+  "Here is the partner wall. This is where ETC's work starts to feel bigger than one lab: schools, hospitals, public agencies, and industry teams all helping ideas get tested in the real world. Let's keep it simple and spotlight a few key names... Ministry of Education Singapore... SkillsFuture SG... Changi General Hospital (SingHealth)... AWS... and Certis.";
+
+const DEMO_PAGE_SCRIPT =
+  "Let's jump into the Patient Safety VR demo. Picture a trainee stepping into a virtual emergency department as a junior doctor. The goal is not just to watch a scene, but to practise the small decisions that keep a patient safe: reading the room, checking the patient's condition, calling for the right medicine, and staying calm when the case starts moving fast. When the medicine arrives, the trainee still has to pause and verify the right drug, the right dose, the right patient, and the right timing before using it. That is the power of this demo: rare, high-pressure moments become repeatable practice. Every run is recorded too, so learners can replay what happened, catch missed steps, and improve before they face a real emergency.";
 
 export default function HomeAssistant() {
   const navigate = useNavigate();
@@ -120,6 +127,7 @@ export default function HomeAssistant() {
   const revealFallbackRef = useRef(null);
   const audioUnlockedRef = useRef(false);
   const ttsCacheRef = useRef(new Map());
+  const pendingSpeechRef = useRef(null);
 
   const updateActiveProject = useCallback((val) => {
     activeProjectRef.current = val;
@@ -164,6 +172,7 @@ export default function HomeAssistant() {
     speechStartRef.current = Date.now();
     speechDurationRef.current = timeMs;
     speakTimeoutRef.current = setTimeout(() => {
+      pendingSpeechRef.current = null;
       broadcastAvatarStatus({ projectName: null, status: 'idle' });
       updateActiveProject(null);
       speakTimeoutRef.current = null;
@@ -196,12 +205,63 @@ export default function HomeAssistant() {
 
   const resetAvatarState = useCallback(() => {
     clearSpeakTimer();
+    pendingSpeechRef.current = null;
+    speechRemainingRef.current = 0;
+    speechDurationRef.current = 0;
     broadcastAvatarStatus({ projectName: null, status: 'idle' });
     updateActiveProject(null);
     setIsSpeaking(false);
     setShowSubtitles(false);
     setLatestScript("");
   }, [broadcastAvatarStatus, clearSpeakTimer, updateActiveProject, setLatestScript]);
+
+  useEffect(() => {
+    const handlePlaybackStarted = (e) => {
+      const pendingSpeech = pendingSpeechRef.current;
+      if (!pendingSpeech || pendingSpeech.script !== e.detail?.script) return;
+
+      const playbackDurationMs = Number.isFinite(e.detail?.durationMs) && e.detail.durationMs > 0
+        ? e.detail.durationMs
+        : pendingSpeech.durationMs;
+
+      broadcastAvatarStatus({
+        projectName: pendingSpeech.projectName,
+        status: 'speaking',
+        durationMs: playbackDurationMs,
+        spokenText: pendingSpeech.spokenText,
+      });
+      setIsSpeaking(true);
+      setShowSubtitles(false);
+      runSpeakTimeout(playbackDurationMs);
+    };
+
+    const handlePlaybackEnded = (e) => {
+      const pendingSpeech = pendingSpeechRef.current;
+      if (!pendingSpeech || pendingSpeech.script !== e.detail?.script) return;
+
+      clearSpeakTimer();
+      pendingSpeechRef.current = null;
+      speechRemainingRef.current = 0;
+      speechDurationRef.current = 0;
+      broadcastAvatarStatus({ projectName: null, status: 'idle' });
+      updateActiveProject(null);
+      setIsSpeaking(false);
+    };
+
+    window.addEventListener('avatar-playback-started', handlePlaybackStarted);
+    window.addEventListener('avatar-playback-ended', handlePlaybackEnded);
+    return () => {
+      window.removeEventListener('avatar-playback-started', handlePlaybackStarted);
+      window.removeEventListener('avatar-playback-ended', handlePlaybackEnded);
+    };
+  }, [broadcastAvatarStatus, clearSpeakTimer, runSpeakTimeout, updateActiveProject]);
+
+  const stopAvatarSpeech = useCallback(() => {
+    window.dispatchEvent(new CustomEvent('avatar-stop-playback'));
+    resetAvatarState();
+    setAiResponseText("");
+    setIsThinking(false);
+  }, [resetAvatarState]);
 
   const revealAssistantResponse = useCallback((text, navTarget = pendingNavRef.current) => {
     clearRevealFallback();
@@ -266,23 +326,13 @@ export default function HomeAssistant() {
     if (cached) return cached;
 
     const job = (async () => {
-      const lower = text.toLowerCase();
-      const hasExternalPartners =
-        lower.includes('partner') || lower.includes('ministry') || lower.includes('skillsfuture') ||
-        lower.includes('tan tock seng') || lower.includes('changi general') || lower.includes('aws') ||
-        lower.includes('transit') || lower.includes('certis') || lower.includes('metabot') ||
-        lower.includes('kite sense') || lower.includes('jma');
+      const processedText = text;
 
-      // Add distinct pauses between partner names by quadrupling the ellipses
-      const processedText = hasExternalPartners
-        ? text.replace(/\.\.\./g, '... ... ... ...')
-        : text;
-
-      // 0.97 keeps the voice natural and clear
+      // Slightly slower than natural so the narration feels calm and clear
       const response = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: processedText, format: 'wav', speed: 0.97 }),
+        body: JSON.stringify({ text: processedText, format: 'wav', speed: 0.9 }),
       });
 
       if (!response.ok) {
@@ -323,38 +373,12 @@ export default function HomeAssistant() {
       const projectName = activeProjectRef.current;
 
       clearSpeakTimer();
-      broadcastAvatarStatus({ projectName, status: 'speaking', durationMs, spokenText: processedText });
-      setIsSpeaking(true);
-      setShowSubtitles(false);
-
-      runSpeakTimeout(durationMs);
-
-      // Read the exact duration from the audio metadata for precise timing
-      (async () => {
-        try {
-          const url = URL.createObjectURL(blob);
-          const audio = new Audio(url);
-          audio.addEventListener('loadedmetadata', () => {
-            if (isFinite(audio.duration) && audio.duration > 0) {
-              const exactDurationMs = audio.duration * 1000;
-
-              // Re-broadcast with exact duration and the processed text
-              broadcastAvatarStatus({
-                projectName,
-                status: 'speaking',
-                durationMs: exactDurationMs,
-                spokenText: processedText,
-              });
-
-              // Reschedule timeout with exact duration
-              runSpeakTimeout(exactDurationMs);
-            }
-            URL.revokeObjectURL(url);
-          });
-        } catch (e) {
-          console.error("Failed to parse exact audio duration:", e);
-        }
-      })();
+      pendingSpeechRef.current = {
+        script: text,
+        projectName,
+        spokenText: processedText,
+        durationMs,
+      };
 
       // Display the original clean text in the chat bubble UI
       revealAssistantResponse(text);
@@ -368,7 +392,7 @@ export default function HomeAssistant() {
       resetAvatarState();
       throw err;
     }
-  }, [broadcastAvatarStatus, clearSpeakTimer, fetchTtsAudio, resetAvatarState, revealAssistantResponse, showNotice, runSpeakTimeout]);
+  }, [clearSpeakTimer, fetchTtsAudio, resetAvatarState, revealAssistantResponse, showNotice]);
 
   const sendMessage = useCallback(async (userMessage, showUserBubble = true) => {
     const cleanMessage = userMessage.trim();
@@ -451,6 +475,14 @@ export default function HomeAssistant() {
         }
       }
 
+      if (navTarget === '/OurPartners' && location.pathname !== '/OurPartners') {
+        speakText = "Sure, let's head to the Partners page. I will walk you through the ecosystem there.";
+      }
+
+      if (navTarget === '/OurProjects/DemoProject' && location.pathname !== '/OurProjects/DemoProject') {
+        speakText = "Let's jump into the Patient Safety VR demo. I will explain the scenario while the video comes forward.";
+      }
+
       if (!speakText) {
         revealAssistantResponse("I don't have that information. Please contact ETC directly at Tan_cheng_khoon@tp.edu.sg or 6780 5585.", navTarget);
         resetAvatarState();
@@ -513,7 +545,7 @@ export default function HomeAssistant() {
   }, [resetAvatarState, unlockAudio]);
 
   // Automatic voice greetings/prompts on route changes
-  const prevPathnameRef = useRef(location.pathname);
+  const prevPathnameRef = useRef(null);
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -527,6 +559,48 @@ export default function HomeAssistant() {
       setTranscriptText("");
       setAiResponseText("Hi! I am the official ETC Assistant. How can I help you today?");
       setLatestScript("");
+    }
+
+    if (
+      currentPath === '/OurPartners' &&
+      prevPath !== '/OurPartners' &&
+      !window.__etcTourActive
+    ) {
+      setIsCollapsed(false);
+      resetAvatarState();
+      pendingNavRef.current = null;
+      setTranscriptText("");
+      setAiResponseText("");
+      setIsThinking(true);
+
+      setTimeout(() => {
+        setLatestScript((prev) =>
+          prev === PARTNERS_PAGE_SCRIPT
+            ? PARTNERS_PAGE_SCRIPT + '\u200B'
+            : PARTNERS_PAGE_SCRIPT
+        );
+      }, 500);
+    }
+
+    if (
+      currentPath === '/OurProjects/DemoProject' &&
+      prevPath !== '/OurProjects/DemoProject' &&
+      !window.__etcTourActive
+    ) {
+      setIsCollapsed(false);
+      resetAvatarState();
+      pendingNavRef.current = null;
+      setTranscriptText("");
+      setAiResponseText("");
+      setIsThinking(true);
+
+      setTimeout(() => {
+        setLatestScript((prev) =>
+          prev === DEMO_PAGE_SCRIPT
+            ? DEMO_PAGE_SCRIPT + '\u200B'
+            : DEMO_PAGE_SCRIPT
+        );
+      }, 500);
     }
 
     // Check if the user navigated to the ProjectDetail portfolio page.
@@ -829,6 +903,21 @@ export default function HomeAssistant() {
           />
         </div>
 
+        {isSpeaking && (
+          <button
+            type="button"
+            className="home-assistant-avatar-stop-btn"
+            onClick={stopAvatarSpeech}
+            title="Stop Speaking"
+            aria-label="Stop avatar speech"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <rect x="7" y="7" width="10" height="10" rx="1.8" />
+            </svg>
+            <span>Stop</span>
+          </button>
+        )}
+
         <div
           className="home-assistant-mic-wrapper"
           style={{
@@ -908,10 +997,7 @@ export default function HomeAssistant() {
                   <button
                     type="button"
                     className="home-assistant-cc-btn home-assistant-cc-btn--stop"
-                    onClick={() => {
-                      resetAvatarState();
-                      setAiResponseText("");
-                    }}
+                    onClick={stopAvatarSpeech}
                     title="Stop Speaking"
                     aria-label="Stop Speaking"
                   >

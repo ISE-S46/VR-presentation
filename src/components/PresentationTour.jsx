@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router';
 import '../styles/components/PresentationTour.css';
 
@@ -31,19 +32,19 @@ const TOUR_STEPS = [
     route: '/Introduction',
     title: 'Introduction',
     script:
-      'Our mission is to integrate enabling technologies that drive innovation and create real value for industry. We focus on areas like assistive technology, smart mobility, rehabilitation engineering, and human-computer interaction.',
+      'Our mission is to integrate enabling technologies that drive innovation and create real value for industry. We focus on areas like assistive technology, rehabilitation engineering, human-computer interaction, and wearable devices.',
   },
   {
     route: '/OurPartners',
     title: 'Partners',
     script:
-      'Collaboration is at our core. We partner internally across Temasek Polytechnic, and externally with organisations like the Ministry of Education, SkillsFuture Singapore, Changi General Hospital, A.W.S., and Certis.',
+      "Here is the partner wall. This is where ETC's work starts to feel bigger than one lab: schools, hospitals, public agencies, and industry teams all helping ideas get tested in the real world. Let's keep it simple and spotlight a few key names... Ministry of Education Singapore... SkillsFuture SG... Changi General Hospital (SingHealth)... AWS... and Certis.",
   },
   {
     route: '/OurProjects',
     title: 'Projects',
     script:
-      "Now, let's look at our work. Our projects are organised into three areas: the full project portfolio, a featured live demo, and opportunities to collaborate with us.",
+      "Now, let's look at our work. Explore our full project portfolio, and a featured live demo that you can watch in action.",
   },
   {
     route: '/OurProjects/ProjectDetail',
@@ -55,20 +56,22 @@ const TOUR_STEPS = [
     route: '/OurProjects/DemoProject',
     title: 'Featured Demo',
     script:
-      'This is our featured demo, a Patient Safety V.R. training simulation. It recreates emergency department scenarios in virtual reality, checks that the correct procedures are followed, and records every session for review.',
-  },
-  {
-    route: '/OurProjects/CollaborationOpportunities',
-    title: 'Collaborate',
-    script:
-      'Finally, here is how you can collaborate with us through industry partnerships, academic research, and student projects. Thank you for joining this guided tour of ETC. Please feel free to ask me any questions. If you would like to learn more, you can continue exploring this website at your own pace.',
+      "Let's jump into the Patient Safety VR demo. Picture a trainee stepping into a virtual emergency department as a junior doctor. The goal is not just to watch a scene, but to practise the small decisions that keep a patient safe: reading the room, checking the patient's condition, calling for the right medicine, and staying calm when the case starts moving fast. When the medicine arrives, the trainee still has to pause and verify the right drug, the right dose, the right patient, and the right timing before using it. That is the power of this demo: rare, high-pressure moments become repeatable practice. Every run is recorded too, so learners can replay what happened, catch missed steps, and improve before they face a real emergency.",
   },
 ];
 
+// Spoken over the closing scene once the demo has been presented.
+const CLOSING_SCRIPT =
+  'Thank you so much for exploring the Enabling Technology Collaboratory with me. I really appreciate your time. If you have any questions at all, please feel free to ask me—I am here to help.';
+
+// Total time the closing scene stays up (settle + narration + hold) before the
+// tour fully ends.
+const CLOSING_TOTAL_MS = 14500;
+
 // Kept short because the next page's voice + JS chunk are prefetched during the
 // current narration, so there is almost nothing left to wait for.
-const RENDER_DELAY = 650; // let the page transition settle before speaking
-const STEP_PAUSE = 700; // breathing room after a narration before the next page
+const RENDER_DELAY = 1200; // let the new page settle and breathe before speaking
+const STEP_PAUSE = 850; // breathing room after a narration before the next page
 const WATCHDOG_BUFFER = 9000; // safety net beyond the estimated narration length
 
 const estimateMs = (text) => Math.max(4500, (text.length / 12.8) * 1000);
@@ -83,7 +86,6 @@ const ROUTE_CHUNKS = {
   '/OurProjects': () => import('../pages/OurProjects'),
   '/OurProjects/ProjectDetail': () => import('../pages/ProjectDetail'),
   '/OurProjects/DemoProject': () => import('../pages/DemoProject'),
-  '/OurProjects/CollaborationOpportunities': () => import('../pages/CollaborationOpportunities'),
 };
 
 const prefetchRoute = (route) => {
@@ -102,6 +104,7 @@ export default function PresentationTour() {
   const [ambientOn, setAmbientOn] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [closing, setClosing] = useState(false);
 
   // Imperative mirrors so timers / listeners always read fresh values.
   const activeRef = useRef(false);
@@ -116,6 +119,7 @@ export default function PresentationTour() {
   const runStepRef = useRef(() => {});
   const advanceRef = useRef(() => {});
   const stopRef = useRef(() => {});
+  const startClosingRef = useRef(() => {});
 
   const clearTimers = useCallback(() => {
     const t = timers.current;
@@ -133,6 +137,7 @@ export default function PresentationTour() {
       phaseRef.current = 'idle';
       isPausedRef.current = false;
       setIsPaused(false);
+      setClosing(false);
       clearTimers();
       window.__etcTourActive = false;
       window.dispatchEvent(new CustomEvent('presentation-tour-state', { detail: { active: false } }));
@@ -172,6 +177,9 @@ export default function PresentationTour() {
       if (nextStep) {
         prefetchVoice(nextStep.script);
         prefetchRoute(nextStep.route);
+      } else {
+        prefetchVoice(CLOSING_SCRIPT);
+        prefetchRoute('/Home');
       }
 
       timers.current.nav = setTimeout(() => {
@@ -193,11 +201,35 @@ export default function PresentationTour() {
     clearTimers();
     const next = stepRef.current + 1;
     if (next >= TOUR_STEPS.length) {
-      stopRef.current({ returnHome: true });
+      // Demo was the last step — play the closing scene instead of just stopping.
+      startClosingRef.current();
       return;
     }
     runStepRef.current(next);
   }, [clearTimers]);
+
+  // Closing scene: leave the demo page, show a "thank you" card, have the avatar
+  // give a short sign-off, then end the tour.
+  const startClosing = useCallback(() => {
+    clearTimers();
+    phaseRef.current = 'closing';
+    isPausedRef.current = false;
+    setIsPaused(false);
+    setShowDropdown(false);
+    setClosing(true);
+    navigate('/Home'); // unmount the demo page so its video spotlight clears
+
+    timers.current.nav = setTimeout(() => {
+      window.dispatchEvent(
+        new CustomEvent('avatar-speak-direct', { detail: { text: CLOSING_SCRIPT } })
+      );
+    }, 120);
+
+    timers.current.watchdog = setTimeout(() => {
+      setClosing(false);
+      stopRef.current();
+    }, CLOSING_TOTAL_MS);
+  }, [clearTimers, navigate]);
 
   const handlePrev = useCallback(() => {
     if (stepIndex > 0) {
@@ -239,7 +271,8 @@ export default function PresentationTour() {
     runStepRef.current = runStep;
     advanceRef.current = advance;
     stopRef.current = stop;
-  }, [runStep, advance, stop]);
+    startClosingRef.current = startClosing;
+  }, [runStep, advance, stop, startClosing]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -277,7 +310,7 @@ export default function PresentationTour() {
     () => () => {
       clearTimers();
       window.__etcTourActive = false;
-      document.body.classList.remove('presentation-mode', 'presentation-ambient');
+      document.body.classList.remove('presentation-mode', 'presentation-ambient', 'presentation-closing');
     },
     [clearTimers]
   );
@@ -285,11 +318,12 @@ export default function PresentationTour() {
   useEffect(() => {
     document.body.classList.toggle('presentation-mode', active);
     document.body.classList.toggle('presentation-ambient', active && ambientOn);
+    document.body.classList.toggle('presentation-closing', active && closing);
 
     return () => {
-      document.body.classList.remove('presentation-mode', 'presentation-ambient');
+      document.body.classList.remove('presentation-mode', 'presentation-ambient', 'presentation-closing');
     };
-  }, [active, ambientOn]);
+  }, [active, ambientOn, closing]);
 
   const start = useCallback(() => {
     if (activeRef.current) return;
@@ -334,6 +368,23 @@ export default function PresentationTour() {
           <small>Guided avatar tour</small>
         </span>
       </button>
+    );
+  }
+
+  if (closing) {
+    return createPortal(
+      <div className="tour-closing" style={{ '--closing-duration': `${CLOSING_TOTAL_MS}ms` }} role="status">
+        <div className="tour-closing-inner">
+          <span className="tour-closing-eyebrow">Thank you for joining us</span>
+          <h2 className="tour-closing-title">
+            Enabling Technology
+            <br />
+            Collaboratory
+          </h2>
+          <p className="tour-closing-sub">Innovating together for a better tomorrow.</p>
+        </div>
+      </div>,
+      document.body
     );
   }
 

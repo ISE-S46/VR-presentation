@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     }
 
     // Parse speed parameter (between 0.5 and 1.5)
-    let speechSpeed = 0.97;
+    let speechSpeed = 0.9;
     if (speed !== undefined) {
       const parsed = parseFloat(speed);
       if (!isNaN(parsed) && parsed >= 0.5 && parsed <= 1.5) {
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
       input: text.trim().slice(0, 3800),
       instructions: `Speak in a warm and natural human tone with gentle expressiveness.
       Add small variations in pitch and rhythm to sound alive.
-      Keep the delivery smooth, clear, and stable.`,
+      Keep the delivery smooth, clear, and stable, at a calm and unhurried pace.`,
       speed: speechSpeed,
       response_format: normalizedFormat,
     });

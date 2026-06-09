@@ -95,22 +95,96 @@ function AvatarCanvas({
   }, [audioURL, button, cameraPosition, modelPath, modelPosition, modelScale, proxiedTtsEndpoint]);
 
   useEffect(() => {
-    if (controller) {
-      if (script) {
-        controller.speak(script);
-      } else {
-        try {
-          controller.audioManager?.cleanup();
-          controller.lipSync?.stop();
-          controller.animCtrl?.switchAction("Idle");
-        } catch (e) {
-          console.error("Error cleaning up avatar speech:", e);
-        }
+    if (!controller) return undefined;
+
+    if (!script) {
+      try {
+        controller.audioManager?.cleanup();
+        controller.lipSync?.stop();
+        controller.animCtrl?.switchAction("Idle");
+      } catch (e) {
+        console.error("Error cleaning up avatar speech:", e);
       }
+      return undefined;
     }
+
+    let cancelled = false;
+    let started = false;
+    let ended = false;
+    let frameId = null;
+    let removeAudioListeners = null;
+
+    const finish = () => {
+      if (cancelled || ended) return;
+      ended = true;
+      window.dispatchEvent(new CustomEvent('avatar-playback-ended', { detail: { script } }));
+    };
+
+    const watchAudio = (audio) => {
+      removeAudioListeners?.();
+
+      const handlePlaying = () => {
+        if (cancelled || started) return;
+        started = true;
+        const durationMs = isFinite(audio.duration) && audio.duration > 0
+          ? audio.duration * 1000
+          : null;
+
+        window.dispatchEvent(
+          new CustomEvent('avatar-playback-started', {
+            detail: { script, durationMs },
+          })
+        );
+      };
+
+      audio.addEventListener('playing', handlePlaying, { once: true });
+      audio.addEventListener('ended', finish, { once: true });
+
+      removeAudioListeners = () => {
+        audio.removeEventListener('playing', handlePlaying);
+        audio.removeEventListener('ended', finish);
+      };
+    };
+
+    let observedAudio = null;
+    const monitorAudio = () => {
+      const audio = controller.audioManager?.audio || controller.audioManager?.loadingAudio;
+      if (audio && audio !== observedAudio) {
+        observedAudio = audio;
+        watchAudio(audio);
+      }
+
+      if (!cancelled && !started) {
+        frameId = requestAnimationFrame(monitorAudio);
+      }
+    };
+
+    monitorAudio();
+    controller.speak(script).catch((e) => {
+      console.error("Error during avatar speech:", e);
+    }).finally(finish);
+
+    return () => {
+      cancelled = true;
+      if (frameId) cancelAnimationFrame(frameId);
+      removeAudioListeners?.();
+    };
   }, [controller, script]);
 
   useEffect(() => {
+    const stopPlayback = () => {
+      if (!controller) return;
+
+      try {
+        controller.audioManager?.cleanup();
+        controller.lipSync?.stop();
+        controller.audioLipSync?.stop?.();
+        controller.animCtrl?.switchAction("Idle");
+      } catch (e) {
+        console.error("Error stopping avatar playback:", e);
+      }
+    };
+
     const handlePause = () => {
       if (controller && controller.audioManager?.audio) {
         try {
@@ -136,11 +210,17 @@ function AvatarCanvas({
       }
     };
 
+    const handleStop = () => {
+      stopPlayback();
+    };
+
     window.addEventListener('avatar-pause-playback', handlePause);
     window.addEventListener('avatar-resume-playback', handleResume);
+    window.addEventListener('avatar-stop-playback', handleStop);
     return () => {
       window.removeEventListener('avatar-pause-playback', handlePause);
       window.removeEventListener('avatar-resume-playback', handleResume);
+      window.removeEventListener('avatar-stop-playback', handleStop);
     };
   }, [controller]);
 

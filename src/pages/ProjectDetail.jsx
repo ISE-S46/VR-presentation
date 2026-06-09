@@ -392,6 +392,67 @@ export default function ProjectDetail() {
     };
   }, [expandedProject]);
 
+  useEffect(() => {
+    if (avatarState.status !== 'speaking') return undefined;
+
+    let frameId;
+    let startFrameId;
+
+    const startAutoScroll = () => {
+      const scrollTarget = expandedProject
+        ? document.querySelector('.arast-container')
+        : window;
+
+      if (!scrollTarget) return;
+
+      const isWindowScroll = scrollTarget === window;
+      const getScrollTop = () => (
+        isWindowScroll
+          ? window.scrollY
+          : scrollTarget.scrollTop
+      );
+      const getMaxScrollTop = () => (
+        isWindowScroll
+          ? Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+          : Math.max(0, scrollTarget.scrollHeight - scrollTarget.clientHeight)
+      );
+      const setScrollTop = (value) => {
+        if (isWindowScroll) {
+          window.scrollTo(0, value);
+        } else {
+          scrollTarget.scrollTop = value;
+        }
+      };
+
+      const startScrollTop = getScrollTop();
+      const maxScrollTop = getMaxScrollTop();
+      const scrollDistance = maxScrollTop - startScrollTop;
+      if (scrollDistance <= 12) return;
+
+      const durationMs = Math.max(3500, (avatarState.durationMs || 9000) * 0.9);
+      const startedAt = performance.now();
+
+      const animateScroll = (now) => {
+        const progress = Math.min(1, (now - startedAt) / durationMs);
+        const easedProgress = 1 - Math.pow(1 - progress, 3);
+        setScrollTop(startScrollTop + scrollDistance * easedProgress);
+
+        if (progress < 1) {
+          frameId = requestAnimationFrame(animateScroll);
+        }
+      };
+
+      frameId = requestAnimationFrame(animateScroll);
+    };
+
+    startFrameId = requestAnimationFrame(startAutoScroll);
+
+    return () => {
+      if (startFrameId) cancelAnimationFrame(startFrameId);
+      if (frameId) cancelAnimationFrame(frameId);
+    };
+  }, [avatarState.durationMs, avatarState.projectName, avatarState.status, expandedProject]);
+
   const projectTags = useMemo(() => {
     return ['All', ...new Set(projects.map((project) => project.tag))];
   }, []);

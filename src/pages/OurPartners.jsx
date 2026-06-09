@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import BackButton from '../components/BackButton';
 import { useAvatarStatus } from '../hooks/useAvatarStatus';
@@ -100,16 +100,63 @@ function PartnerIcon({ name }) {
 }
 
 function MarqueeRow({ partners, direction = 'left', speed = '35s', highlightedPartnerName }) {
+  const containerRef = useRef(null);
+  const trackRef = useRef(null);
+  const activePartnerIndex = partners.findIndex((p) => p.name === highlightedPartnerName);
+  const focusedRepeatedIndex = activePartnerIndex === -1
+    ? -1
+    : partners.length * 2 + activePartnerIndex;
+
   // Multiply the elements to form a seamless loop
-  const repeatedPartners = [...partners, ...partners, ...partners, ...partners, ...partners];
+  const repeatedPartners = Array.from({ length: 5 }, (_, repeatIndex) =>
+    partners.map((partner, partnerIndex) => ({
+      ...partner,
+      repeatIndex,
+      originalIndex: partnerIndex,
+    }))
+  ).flat();
+
+  useLayoutEffect(() => {
+    const track = trackRef.current;
+    if (!track) return undefined;
+
+    if (focusedRepeatedIndex === -1) {
+      track.style.transform = '';
+      return undefined;
+    }
+
+    const container = containerRef.current;
+    const focusedItem = track?.querySelector('[data-focus-active="true"]');
+    if (!container || !focusedItem) return undefined;
+
+    const containerWidth = container.getBoundingClientRect().width;
+    const focusedCenter = focusedItem.offsetLeft + focusedItem.offsetWidth / 2;
+    track.style.transform = `translateX(${containerWidth / 2 - focusedCenter}px)`;
+
+    return () => {
+      track.style.transform = '';
+    };
+  }, [focusedRepeatedIndex, partners.length]);
 
   return (
-    <div className={`partner-marquee-container marquee-${direction}`}>
-      <div className="partner-marquee-track" style={{ animationDuration: speed }}>
+    <div
+      ref={containerRef}
+      className={`partner-marquee-container marquee-${direction} ${focusedRepeatedIndex !== -1 ? 'is-focusing' : ''}`}
+    >
+      <div
+        ref={trackRef}
+        className="partner-marquee-track"
+        style={{ animationDuration: speed }}
+      >
         {repeatedPartners.map((p, idx) => {
           const isHighlighted = p.name === highlightedPartnerName;
+          const isFocusedCopy = idx === focusedRepeatedIndex;
           return (
-            <div className={`marquee-logo-item ${isHighlighted ? 'highlighted' : ''}`} key={idx}>
+            <div
+              className={`marquee-logo-item ${isHighlighted ? 'highlighted' : ''}`}
+              data-focus-active={isFocusedCopy ? 'true' : undefined}
+              key={`${p.name}-${p.repeatIndex}-${p.originalIndex}`}
+            >
               <div className="marquee-logo-wrapper">
                 <img
                   src={p.logo}
@@ -234,28 +281,37 @@ export default function OurPartners() {
         };
       });
 
+      const startScrollY = window.scrollY;
+      const maxScrollY = Math.max(
+        0,
+        document.documentElement.scrollHeight - window.innerHeight
+      );
+      const scrollDistance = maxScrollY - startScrollY;
+      const firstPartnerStartMs = adjustedTimeline[0]?.start ?? activeDurationMs;
+      const scrollDurationMs = Math.max(3000, Math.min(activeDurationMs * 0.92, firstPartnerStartMs - 350));
+      let scrollFrameId;
+
+      if (scrollDistance > 0) {
+        const scrollStart = performance.now();
+        const animateScroll = (now) => {
+          const progress = Math.min(1, (now - scrollStart) / scrollDurationMs);
+          const easedProgress = 1 - Math.pow(1 - progress, 3);
+          window.scrollTo(0, startScrollY + scrollDistance * easedProgress);
+
+          if (progress < 1) {
+            scrollFrameId = requestAnimationFrame(animateScroll);
+          }
+        };
+
+        scrollFrameId = requestAnimationFrame(animateScroll);
+      }
+
       const timers = [];
 
-      adjustedTimeline.forEach((event, idx) => {
-        // Timer to trigger the highlight & scroll
+      adjustedTimeline.forEach((event) => {
+        // Timer to trigger the in-page partner highlight
         const startTimer = setTimeout(() => {
           setHighlightedPartner(event.name);
-          
-          // Only scroll if the partner type changed or if it's the first highlight to avoid constant scrolling fight
-          const isFirstOfType = idx === 0 || adjustedTimeline[idx - 1].type !== event.type;
-          if (isFirstOfType) {
-            if (event.type === 'external') {
-              const element = document.querySelector('.external-marquee-wall');
-              if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }
-            } else {
-              const element = document.querySelector('.internal-partner-list');
-              if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }
-            }
-          }
         }, event.start);
         timers.push(startTimer);
 
@@ -268,6 +324,7 @@ export default function OurPartners() {
 
       return () => {
         timers.forEach(clearTimeout);
+        if (scrollFrameId) cancelAnimationFrame(scrollFrameId);
       };
     } else {
       // Clear the highlight on the next frame (deferred so it isn't a
@@ -279,64 +336,9 @@ export default function OurPartners() {
 
   const hasHighlight = highlightedPartner !== null;
 
-  // Partners live in scrolling marquees or may be scrolled past, so a frozen
-  // highlight can end up off-screen. Mirror the currently-named partner in a
-  // fixed, centred "spotlight" card so it's always clearly visible.
-  const spotlightPartner = (() => {
-    if (!highlightedPartner) return null;
-
-    // Check external partners first (they have logos)
-    const ext = [...govHealthcarePartners, ...techCommunityPartners].find((p) => p.name === highlightedPartner);
-    if (ext) return ext;
-
-    // Fall back to internal centres — synthesise a card with the first-letter fallback
-    const intl = internalCentres.find((c) => c.name === highlightedPartner);
-    if (intl) return { name: intl.name, logo: null, _accent: intl.color };
-
-    return null;
-  })();
-
   return (
     <div className={`page-container partners-page animate-fade-in ${hasHighlight ? 'has-highlight' : ''}`}>
       <BackButton onClick={() => navigate('/Home')} />
-
-      {spotlightPartner && (
-        <div
-          className="partner-spotlight"
-          key={spotlightPartner.name}
-          aria-hidden="true"
-          style={spotlightPartner._accent ? { '--spotlight-accent': spotlightPartner._accent } : undefined}
-        >
-          <span className="partner-spotlight-eyebrow">
-            {spotlightPartner._accent ? 'Internal Centre' : 'ETC Partner'}
-          </span>
-          <div className="partner-spotlight-logo-wrap">
-            {spotlightPartner.logo ? (
-              <img
-                src={spotlightPartner.logo}
-                alt={spotlightPartner.name}
-                className="partner-spotlight-logo"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  const fb = e.target.nextSibling;
-                  if (fb) fb.style.display = 'flex';
-                }}
-              />
-            ) : null}
-            <span
-              className="partner-spotlight-fallback"
-              style={{
-                display: spotlightPartner.logo ? 'none' : 'flex',
-                background: spotlightPartner._accent ? `${spotlightPartner._accent}18` : undefined,
-                color: spotlightPartner._accent || undefined,
-              }}
-            >
-              {spotlightPartner.name.charAt(0)}
-            </span>
-          </div>
-          <span className="partner-spotlight-name">{spotlightPartner.name}</span>
-        </div>
-      )}
 
       <div className="page-header">
         <span className="section-label">Ecosystem</span>

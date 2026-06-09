@@ -1,14 +1,14 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
 import BackButton from '../components/BackButton';
 import { useSoundEffects } from '../hooks/useSoundEffects';
+import { useAvatarStatus } from '../hooks/useAvatarStatus';
 import introLabImage from '../assets/intro-lab.jpg';
 import '../styles/pages/Introduction.css';
 
 const FOCUS_AREAS = [
   { name: 'Assistive Technology', desc: 'Inclusive tools that improve daily independence.', icon: 'heart' },
-  { name: 'Smart Mobility', desc: 'Connected systems for safer, more adaptive movement.', icon: 'activity' },
   { name: 'Rehabilitation Engineering', desc: 'Applied prototypes for recovery and clinical support.', icon: 'hexagon' },
   { name: 'Human-Computer Interaction', desc: 'Interfaces that make complex technology easier to use.', icon: 'monitor' },
   { name: 'Wearable Devices', desc: 'Sensor-led devices for monitoring and feedback.', icon: 'watch' },
@@ -89,6 +89,39 @@ export default function Introduction() {
   const navigate = useNavigate();
   const cardRefs = useRef([]);
   const { playHoverSound, playClickSound } = useSoundEffects();
+  const avatarState = useAvatarStatus();
+
+  useEffect(() => {
+    if (avatarState.status !== 'speaking') return undefined;
+
+    const startScrollY = window.scrollY;
+    const maxScrollY = Math.max(
+      0,
+      document.documentElement.scrollHeight - window.innerHeight
+    );
+    const scrollDistance = maxScrollY - startScrollY;
+    if (scrollDistance <= 12) return undefined;
+
+    const durationMs = Math.max(3500, (avatarState.durationMs || 9000) * 0.9);
+    const startedAt = performance.now();
+    let frameId;
+
+    const animateScroll = (now) => {
+      const progress = Math.min(1, (now - startedAt) / durationMs);
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+      window.scrollTo(0, startScrollY + scrollDistance * easedProgress);
+
+      if (progress < 1) {
+        frameId = requestAnimationFrame(animateScroll);
+      }
+    };
+
+    frameId = requestAnimationFrame(animateScroll);
+
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+    };
+  }, [avatarState.durationMs, avatarState.status]);
 
   const handleNavClick = (path) => {
     playClickSound();

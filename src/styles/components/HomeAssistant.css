@@ -37,6 +37,42 @@
   box-shadow: none;
 }
 
+.home-assistant-avatar-stop-btn {
+  position: absolute;
+  right: 22px;
+  bottom: 258px;
+  z-index: 11;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 13px 0 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(220, 38, 38, 0.88);
+  color: #ffffff;
+  font-size: 0.74rem;
+  font-weight: 750;
+  box-shadow: 0 10px 24px rgba(127, 29, 29, 0.32);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  pointer-events: auto;
+  animation: pop-in 0.25s ease-out;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-assistant-avatar-stop-btn:hover {
+  transform: translateY(-1px) scale(1.04);
+  background: rgba(185, 28, 28, 0.94);
+  box-shadow: 0 12px 28px rgba(127, 29, 29, 0.42);
+}
+
+.home-assistant-avatar-stop-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
 /* ===== Toggle Button (Collapse / Expand) ===== */
 .home-assistant-toggle-btn {
   position: fixed;
@@ -547,6 +583,14 @@
   .home-assistant-toggle-btn:not(.collapsed) {
     bottom: 530px;      /* Float above the strip */
     right: 16px;
+  }
+
+  .home-assistant-avatar-stop-btn {
+    right: 16px;
+    bottom: 226px;
+    height: 34px;
+    padding: 0 11px 0 10px;
+    font-size: 0.7rem;
   }
 }
 
