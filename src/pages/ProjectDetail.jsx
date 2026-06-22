@@ -242,121 +242,43 @@ function AttitudesIcon({ className }) {
   );
 }
 
-const projects = [
-  {
-    number: '01',
-    title: 'Augmented Reality Application for Security Training',
-    desc: 'Co-funded by SSG, utilizing image target tracking to simulate security incidents',
-    tag: 'Security & VR/AR',
-    color: '#0d9488',
-    isArast: true,
-    iconComponent: SecurityShieldIcon,
-    avatar: {
-      projectName: 'ARAST',
-      projectTitle: 'Augmented Reality Application for Security Training (ARAST)',
-      variant: 'teal',
-      customPrompt: 'Explain the Augmented Reality Application for Security Training (ARAST) project in detail. It is co-funded by SSG and partnered with Certis. It uses image target tracking to simulate security incidents such as fires, improvised explosive devices (IEDs), break-ins, suspicious persons, and bag searches. Trainees can interact with augmented 3D objects like suspicious packages. It also features a real-time analytics dashboard to monitor training completion, identify frequent errors, and track competencies, supplementing basic WSQ security module training.',
-    },
-  },
-  {
-    number: '02',
-    title: 'Automated Risk Assessment for image-based hazard identification and mitigation (ARA)',
-    desc: 'Streamlining workplace risk assessments by developing an automated identification system',
-    tag: 'Safety & AI',
-    color: '#7c3aed',
-    isAra: true,
-    iconComponent: AiScannerIcon,
-    avatar: {
-      projectName: 'ARA',
-      projectTitle: 'Automated Risk Assessment (ARA)',
-      variant: 'violet',
-      customPrompt: 'Explain the Automated Risk Assessment (ARA) project in detail. This safety and AI initiative aims to streamline workplace risk assessments by accepting workplace photos and automatically generating draft Risk Assessment (RA) forms. It identifies and categorizes hazards based on Ministry of Manpower (MOM) classifications, allowing users to review, refine, and archive the forms, which helps analyze hazard trends.',
-    },
-  },
-  {
-    number: '03',
-    title: 'Pre-Procedure Evaluation System for MRI',
-    desc: 'AR-based simulation that helps patients acclimatise before MRI scans',
-    tag: 'Healthcare & VR',
-    color: '#059669',
-    isMri: true,
-    iconComponent: MriHeartbeatIcon,
-    avatar: {
-      projectName: 'MRI',
-      projectTitle: 'Pre-Procedure Evaluation System for MRI',
-      variant: 'teal',
-      customPrompt: 'Explain the Pre-Procedure Evaluation System for MRI in detail. Co-funded by the Temasek Polytechnic Research Fund (TPRF) and partnered with Changi General Hospital (CGH), this healthcare project aims to reduce aborted MRI scans. It uses a VR prototype to acclimatise claustrophobic or anxious patients, collecting metrics like bed mat pressure distribution, patient vitals, and camera tracking to compute a suitability evaluation score.',
-    },
-  },
-  {
-    number: '04',
-    title: 'Virtual Practice Environment for Oral Exam Preparation',
-    desc: 'A virtual practice environment where students interact with an AI simulating a teacher for oral exam preparation',
-    tag: 'Education & AI',
-    color: '#0284c7',
-    isOral: true,
-    iconComponent: EducationIcon,
-    avatar: {
-      projectName: 'OralExam',
-      projectTitle: 'Virtual Practice Environment for Oral Exam Preparation',
-      variant: 'violet',
-      customPrompt: 'Explain the Virtual Practice Environment for Oral Exam Preparation in detail. Partnered with Dunman Secondary School and Bartley Secondary School, this education initiative uses voice-to-text, large language models (LLM), and text-to-voice where an AI acts as a teacher to let students practice interactive oral exams. Teachers can upload visual stimuli, exam rubrics, and access AI-generated feedback and assessments of student performance.',
-    },
-  },
-  {
-    number: '05',
-    title: 'E-Practical and Immersive technology (A/VR) Learning Package',
-    desc: 'Initiative driven by Polytechnics & ITE (POLITE) Education Technology Committee',
-    tag: 'Education & VR/AR',
-    color: '#ea580c',
-    isPolite: true,
-    iconComponent: VrHeadsetIcon,
-    avatar: {
-      projectName: 'PolitePackage',
-      projectTitle: 'E-Practical and Immersive Technology (A/VR) Learning Package',
-      variant: 'teal',
-      customPrompt: 'Explain the E-Practical and Immersive Technology Learning Package in detail. Driven by the POLITE Education Technology Committee across Singapore Poly, Ngee Ann Poly, Republic Poly, Nanyang Poly, and Temasek Poly, it covers 4 workplace safety topics: Ladder Safety, Fire Hazard Check, Fire Safety Equipment Visual Check, and Hazard Identification. Accessible via WebVR and Oculus Quest, it serves approximately 1500 students annually across the 5 polytechnics.',
-    },
-  },
-  {
-    number: '06',
-    title: 'Immersive Role-play: Role-Play Authoring and AI-Assisted Assessment',
-    desc: 'A role-play authoring and management platform providing a cost-effective alternative to face-to-face training',
-    tag: 'Training & AI',
-    color: '#db2777',
-    isRoleplay: true,
-    iconComponent: RoleplayIcon,
-    avatar: {
-      projectName: 'Roleplay',
-      projectTitle: 'Immersive Role-play: Role-Play Authoring and AI-Assisted Assessment',
-      variant: 'violet',
-      customPrompt: 'Explain the Immersive Role-play and AI-Assisted Assessment project in detail. Partnered with JMA Research, this multi-device application provides a cost-effective alternative to face-to-face roleplays. It enables domain experts to easily customize conversation intents, select avatars and animations, and choose role-play environments. It uses AI to analyze student facial expressions, speech emotions, language sentiments, and training effectiveness.',
-    },
-  },
-  {
-    number: '07',
-    title: 'Patient Safety Training: Use of VR to Inculcate The Concept of Patient Safety in the Emergency Department',
-    desc: 'Immersive virtual emergency department to impart patient safety education to junior doctors',
-    tag: 'Healthcare & VR',
-    color: '#14b8a6',
-    isSafetyVR: true,
-    iconComponent: SafetyVrIcon,
-    avatar: {
-      projectName: 'SafetyVR',
-      projectTitle: 'Patient Safety Training: Use of VR in the Emergency Department',
-      variant: 'teal',
-      customPrompt: 'Explain the Patient Safety Training VR project in detail. Partnered with Changi General Hospital (CGH), this healthcare VR simulation creates a gamified virtual emergency department to train junior doctors in critical patient safety elements: Skills, Knowledge, and Attitudes. It allows learning in a fun, risk-free environment without requiring high-cost instructors.',
-    },
-  },
-];
+// Map iconName strings from JSON back to React component functions
+const getIconComponent = (iconName) => {
+  const mapping = {
+    SecurityShieldIcon,
+    AiScannerIcon,
+    MriHeartbeatIcon,
+    EducationIcon,
+    VrHeadsetIcon,
+    RoleplayIcon,
+    SafetyVrIcon,
+  };
+  return mapping[iconName] || SecurityShieldIcon;
+};
 
 export default function ProjectDetail() {
   const navigate = useNavigate();
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [expandedProject, setExpandedProject] = useState(null);
   const [activeTag, setActiveTag] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const avatarState = useAvatarStatus();
   const searchInputRef = useRef(null);
+
+  // Load project configurations dynamically
+  useEffect(() => {
+    fetch('/projects.json')
+      .then((res) => res.json())
+      .then((data) => {
+        setProjects(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to load projects:', err);
+        setLoading(false);
+      });
+  }, []);
 
   // Press "/" anywhere on the page to jump straight to the search box.
   useEffect(() => {
@@ -455,7 +377,7 @@ export default function ProjectDetail() {
 
   const projectTags = useMemo(() => {
     return ['All', ...new Set(projects.map((project) => project.tag))];
-  }, []);
+  }, [projects]);
 
   const filteredProjects = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -465,13 +387,22 @@ export default function ProjectDetail() {
       const searchableText = `${project.title} ${project.desc} ${project.tag}`.toLowerCase();
       return matchesTag && (!query || searchableText.includes(query));
     });
-  }, [activeTag, searchQuery]);
+  }, [projects, activeTag, searchQuery]);
 
   const toggleExpand = (projectTitle) => {
     setExpandedProject(expandedProject === projectTitle ? null : projectTitle);
   };
 
   const closeProjectModal = () => setExpandedProject(null);
+
+  if (loading) {
+    return (
+      <div className="route-fallback" role="status" aria-live="polite" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', justifyContent: 'center', height: '60vh', color: 'var(--text-secondary)' }}>
+        <span className="route-fallback-spinner" />
+        <span>Loading projects portfolio...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container animate-fade-in">
@@ -549,7 +480,7 @@ export default function ProjectDetail() {
       <div className="stagger-children project-list">
         {filteredProjects.map((proj) => {
           const isExpanded = expandedProject === proj.title;
-          const Icon = proj.iconComponent;
+          const Icon = getIconComponent(proj.iconName);
           return (
             <div
               key={proj.title}

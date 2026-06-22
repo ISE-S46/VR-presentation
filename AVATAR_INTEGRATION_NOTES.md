@@ -22,14 +22,14 @@ api/gpt.js                             # ETC-scoped LLM response
 api/stt.js                             # Speech-to-text
 api/tts.js                             # Text-to-speech
 vendor/avatar-model/                   # Local avatar package
-public/model/FModel2.glb               # Assistant model used globally
+public/model/FModel2new.glb            # Assistant model used globally
 ```
 
 ## Usage
 
 ```jsx
 <CharacterViewer
-  modelPath="/model/FModel2.glb"
+  modelPath="/model/FModel2new.glb"
   ttsEndpoint={handleTTSFetch}
   script={latestScript}
   button={false}

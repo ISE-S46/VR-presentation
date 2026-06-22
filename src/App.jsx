@@ -1,10 +1,11 @@
-import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router';
+import { lazy, Suspense, useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 import LiveClock from './components/LiveClock';
 import InteractiveMeshBackground from './components/InteractiveMeshBackground';
 import ScrollProgress from './components/ScrollProgress';
 import PresentationTour from './components/PresentationTour';
+import AdminLoginModal from './components/AdminLoginModal';
 import './styles/App.css';
 
 const Home = lazy(() => import('./pages/Home'));
@@ -12,6 +13,7 @@ const Introduction = lazy(() => import('./pages/Introduction'));
 const OurPartners = lazy(() => import('./pages/OurPartners'));
 const OurProjects = lazy(() => import('./pages/OurProjects'));
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
+const ProjectEditor = lazy(() => import('./pages/ProjectEditor'));
 const DemoProject = lazy(() => import('./pages/DemoProject'));
 const CollaborationOpportunities = lazy(() => import('./pages/CollaborationOpportunities'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -61,6 +63,7 @@ function AnimatedRoutes() {
             <Route path="/OurPartners" element={<OurPartners />} />
             <Route path="/OurProjects" element={<OurProjects />} />
             <Route path="/OurProjects/ProjectDetail" element={<ProjectDetail />} />
+            <Route path="/OurProjects/ProjectDetail/edit" element={<ProjectEditor />} />
             <Route path="/OurProjects/DemoProject" element={<DemoProject />} />
             <Route path="/OurProjects/CollaborationOpportunities" element={<CollaborationOpportunities />} />
             <Route path="*" element={<NotFound />} />
@@ -71,36 +74,66 @@ function AnimatedRoutes() {
   );
 }
 
+function AppContent() {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const navigate = useNavigate();
+
+  // Listen for Ctrl+Shift+A or Cmd+Shift+A key shortcut to open login
+  useEffect(() => {
+    const handleKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'a') {
+        const el = document.activeElement;
+        const isTyping = el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
+        if (isTyping) return;
+        
+        e.preventDefault();
+        setIsLoginOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, []);
+
+  return (
+    <div className="app-root">
+      {/* Background elements stay persistent across all pages */}
+      <InteractiveMeshBackground />
+      <div className="bg-animation">
+        <div className="bg-orb bg-orb-1"></div>
+        <div className="bg-orb bg-orb-2"></div>
+        <div className="bg-orb bg-orb-3"></div>
+      </div>
+
+      <LiveClock />
+
+      {/* Reading-progress bar + back-to-top control, resets scroll per route */}
+      <ScrollProgress />
+
+      {/* Animated page transitions for clear separation between sections */}
+      <AnimatedRoutes />
+      
+      {/* Global 3D Avatar Assistant */}
+      <Suspense fallback={null}>
+        <HomeAssistant />
+      </Suspense>
+
+      {/* One-click guided presentation that narrates every section */}
+      <PresentationTour />
+
+      {/* Global Admin login popup */}
+      <AdminLoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onSuccess={() => navigate('/OurProjects/ProjectDetail/edit')}
+      />
+    </div>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
-      <div className="app-root">
-
-        {/* Background elements stay persistent across all pages */}
-        <InteractiveMeshBackground />
-        <div className="bg-animation">
-          <div className="bg-orb bg-orb-1"></div>
-          <div className="bg-orb bg-orb-2"></div>
-          <div className="bg-orb bg-orb-3"></div>
-        </div>
-
-        <LiveClock />
-
-        {/* Reading-progress bar + back-to-top control, resets scroll per route */}
-        <ScrollProgress />
-
-        {/* Animated page transitions for clear separation between sections */}
-        <AnimatedRoutes />
-        
-        {/* Global 3D Avatar Assistant */}
-        <Suspense fallback={null}>
-          <HomeAssistant />
-        </Suspense>
-
-        {/* One-click guided presentation that narrates every section */}
-        <PresentationTour />
-
-      </div>
+      <AppContent />
     </BrowserRouter>
   );
 }

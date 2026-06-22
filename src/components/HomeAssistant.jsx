@@ -328,11 +328,11 @@ export default function HomeAssistant() {
     const job = (async () => {
       const processedText = text;
 
-      // Slightly slower than natural so the narration feels calm and clear
+      // Slightly faster than 0.9, but slower than 1.05 for a balanced narration speed
       const response = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: processedText, format: 'wav', speed: 0.9 }),
+        body: JSON.stringify({ text: processedText, format: 'wav', speed: 0.98 }),
       });
 
       if (!response.ok) {
@@ -368,7 +368,7 @@ export default function HomeAssistant() {
       const { blob, processedText } = await fetchTtsAudio(text);
 
       const charCount = processedText.length;
-      const charsPerSecond = 12.8;
+      const charsPerSecond = 13.9;
       const durationMs = Math.max(4500, (charCount / charsPerSecond) * 1000);
       const projectName = activeProjectRef.current;
 
@@ -894,7 +894,7 @@ export default function HomeAssistant() {
           style={{ position: 'absolute', inset: 0 }}
         >
           <CharacterViewer
-            modelPath="/model/FModel2.glb"
+            modelPath="/model/FModel2new.glb"
             ttsEndpoint={handleTTSFetch}
             script={latestScript}
             button={false}
