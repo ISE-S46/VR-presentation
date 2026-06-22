@@ -89,3 +89,25 @@ npm run build
 ```
 
 Also verify the main routes in a browser, especially the global assistant, project filters, expanded project cards, and featured demo video fallback.
+
+## Git & Deployment
+
+When the user asks to upload to GitHub or complete a task, always perform these two steps:
+
+1. **Push to Both Remotes**:
+   - `git push origin main`
+   - `git push etc main`
+
+2. **Deploy to the Server**:
+   - Connect via SSH: `ssh -i /Users/tinnapatchennil/Downloads/tp-etc-demos.pem ubuntu@13.214.134.91`
+   - Path on server: `/home/ubuntu/VR-presentation-main`
+   - Steps on server:
+     ```bash
+     cd /home/ubuntu/VR-presentation-main
+     git pull origin main
+     npm install
+     npm run build
+     pm2 restart etc-app
+     ```
+   - Live URL: http://13.214.134.91:20356
+
